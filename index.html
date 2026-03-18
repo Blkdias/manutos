@@ -1,0 +1,2371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ManutOS · Gestão de Manutenção</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0f1117;
+  --bg2: #161b27;
+  --bg3: #1e2535;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8eaf0;
+  --text2: #8892a4;
+  --text3: #5a6478;
+  --accent: #4f8ef7;
+  --accent2: #6366f1;
+  --accent-glow: rgba(79,142,247,0.2);
+  --green: #22d3a0;
+  --green-dim: rgba(34,211,160,0.15);
+  --red: #f76b6b;
+  --red-dim: rgba(247,107,107,0.15);
+  --orange: #f5a742;
+  --orange-dim: rgba(245,167,66,0.15);
+  --yellow: #fbbf24;
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.15);
+  --sidebar: 260px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.6);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 10px; }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  position: fixed; left:0; top:0; bottom:0;
+  width: var(--sidebar);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  z-index: 900;
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+}
+
+.sidebar-logo {
+  padding: 24px 20px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-mark {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff;
+  box-shadow: 0 4px 16px rgba(79,142,247,0.4);
+  flex-shrink: 0;
+}
+
+.logo-text { line-height: 1.2; }
+.logo-text strong { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -.3px; }
+.logo-text span { font-size: 11px; color: var(--text3); display: block; margin-top: 1px; }
+
+.nav-section { flex: 1; overflow-y: auto; padding: 16px 0; }
+
+.nav-group-label {
+  padding: 0 20px 8px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  color: var(--text3); text-transform: uppercase;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 20px;
+  color: var(--text2); font-size: 14px; font-weight: 500;
+  cursor: pointer; border: none; background: none; width: 100%;
+  text-align: left; border-radius: 0;
+  position: relative;
+  transition: color .2s, background .2s;
+}
+.nav-item::before {
+  content: '';
+  position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 3px; background: var(--accent);
+  border-radius: 0 3px 3px 0;
+  opacity: 0; transition: opacity .2s;
+}
+.nav-item i { width: 18px; text-align: center; font-size: 15px; }
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-item.active { color: var(--accent); background: rgba(79,142,247,0.08); }
+.nav-item.active::before { opacity: 1; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--red-dim); color: var(--red);
+  font-size: 10px; font-weight: 700;
+  padding: 2px 6px; border-radius: 10px;
+}
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.user-avatar {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, #22d3a0, #3b82f6);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: #fff;
+  flex-shrink: 0;
+}
+.user-name { font-size: 13px; font-weight: 600; }
+.user-role { font-size: 11px; color: var(--text3); }
+
+/* ─── MAIN ─── */
+.main { margin-left: var(--sidebar); min-height: 100vh; display: flex; flex-direction: column; }
+
+.topbar {
+  height: 64px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+  position: sticky; top: 0; z-index: 800;
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.menu-btn {
+  display: none;
+  background: none; border: none; color: var(--text2);
+  font-size: 18px; cursor: pointer; padding: 6px;
+}
+
+.breadcrumb { font-size: 13px; color: var(--text3); }
+.breadcrumb span { color: var(--text); font-weight: 600; }
+
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.topbar-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text2); font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: inherit;
+  transition: all .2s;
+}
+.topbar-btn:hover { border-color: var(--border2); color: var(--text); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2)) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(79,142,247,0.3);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,142,247,0.4) !important; }
+
+/* ─── CONTENT ─── */
+.content { flex: 1; padding: 28px; overflow-y: auto; }
+
+.page { display: none; animation: fadeIn .3s ease; }
+.page.active { display: block; }
+
+@keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+
+/* ─── PAGE HEADER ─── */
+.page-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 28px;
+}
+.page-title { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+.page-subtitle { font-size: 13px; color: var(--text3); margin-top: 3px; }
+.page-actions { display: flex; gap: 10px; align-items: center; }
+
+/* ─── STATS GRID ─── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative; overflow: hidden;
+  transition: border-color .2s, transform .2s;
+}
+.stat-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+
+.stat-card::after {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  opacity: .06;
+}
+.stat-card.blue::after { background: var(--accent); }
+.stat-card.red::after { background: var(--red); }
+.stat-card.green::after { background: var(--green); }
+.stat-card.purple::after { background: var(--purple); }
+
+.stat-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; margin-bottom: 14px;
+}
+.stat-icon.blue { background: rgba(79,142,247,.15); color: var(--accent); }
+.stat-icon.red { background: var(--red-dim); color: var(--red); }
+.stat-icon.green { background: var(--green-dim); color: var(--green); }
+.stat-icon.purple { background: var(--purple-dim); color: var(--purple); }
+.stat-icon.orange { background: var(--orange-dim); color: var(--orange); }
+
+.stat-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+.stat-label { font-size: 12px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+.stat-sub { font-size: 12px; color: var(--text3); margin-top: 10px; display: flex; align-items: center; gap: 4px; }
+.stat-sub .alert { color: var(--red); }
+.stat-sub .good { color: var(--green); }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-size: 15px; font-weight: 700; }
+.card-body { padding: 20px; }
+
+.btn-link {
+  background: none; border: none;
+  color: var(--accent); font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; gap: 4px;
+  transition: gap .2s;
+}
+.btn-link:hover { gap: 8px; }
+
+/* ─── DASHBOARD GRID ─── */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+}
+
+/* ─── ALERT BANNER ─── */
+.alert-banner {
+  background: rgba(245,167,66,0.08);
+  border: 1px solid rgba(245,167,66,0.25);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+.alert-banner-left { display: flex; align-items: center; gap: 12px; }
+.alert-banner-icon {
+  width: 36px; height: 36px;
+  background: var(--orange-dim);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--orange); font-size: 16px;
+  flex-shrink: 0;
+}
+.alert-banner h4 { font-size: 14px; font-weight: 700; color: var(--orange); }
+.alert-banner p { font-size: 12px; color: var(--text3); margin-top: 1px; }
+.alert-banner .btn-alert {
+  background: var(--orange-dim); border: 1px solid rgba(245,167,66,0.3);
+  color: var(--orange); padding: 8px 16px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+  white-space: nowrap; transition: all .2s;
+}
+.alert-banner .btn-alert:hover { background: rgba(245,167,66,0.25); }
+
+/* ─── OS LIST ─── */
+.os-list { display: flex; flex-direction: column; }
+
+.os-item {
+  display: flex; gap: 14px; padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background .15s;
+}
+.os-item:last-child { border-bottom: none; }
+.os-item:hover { background: rgba(255,255,255,0.025); }
+
+.os-indicator {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0; margin-top: 2px;
+}
+.os-indicator.alta { background: var(--red-dim); color: var(--red); }
+.os-indicator.média { background: var(--orange-dim); color: var(--orange); }
+.os-indicator.baixa { background: var(--green-dim); color: var(--green); }
+.os-indicator.concluida { background: rgba(34,211,160,0.1); color: var(--green); }
+
+.os-body { flex: 1; min-width: 0; }
+.os-row1 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+.os-num { font-size: 14px; font-weight: 700; color: var(--text); }
+.os-unit { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+.os-desc { font-size: 13px; color: var(--text2); line-height: 1.5;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 500px; }
+.os-footer { display: flex; align-items: center; gap: 16px; margin-top: 8px; flex-wrap: wrap; }
+.os-date { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
+.os-date.late { color: var(--red); }
+
+/* ─── BADGES ─── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+}
+.badge-alta { background: var(--red-dim); color: var(--red); }
+.badge-média { background: var(--orange-dim); color: var(--orange); }
+.badge-baixa { background: var(--green-dim); color: var(--green); }
+.badge-aberta { background: rgba(79,142,247,.15); color: var(--accent); }
+.badge-andamento { background: rgba(167,139,250,.15); color: var(--purple); }
+.badge-aguardando { background: var(--orange-dim); color: var(--orange); }
+.badge-concluida { background: var(--green-dim); color: var(--green); }
+.badge-cancelada { background: rgba(255,255,255,.07); color: var(--text3); }
+
+.badge-ubs { background: rgba(99,102,241,.15); color: #a5b4fc; }
+.badge-upa { background: rgba(239,68,68,.15); color: #fca5a5; }
+.badge-hospital { background: rgba(245,158,11,.15); color: #fcd34d; }
+.badge-cme { background: rgba(6,182,212,.15); color: #67e8f9; }
+.badge-outro { background: rgba(255,255,255,.07); color: var(--text3); }
+
+/* ─── SEARCH & FILTER BAR ─── */
+.search-bar {
+  display: flex; gap: 10px; margin-bottom: 20px; align-items: center;
+}
+.search-input-wrap {
+  flex: 1; position: relative;
+}
+.search-input-wrap i {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  color: var(--text3); font-size: 14px;
+}
+.search-input {
+  width: 100%; padding: 10px 14px 10px 40px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-size: 14px; font-family: inherit;
+  transition: border-color .2s;
+}
+.search-input::placeholder { color: var(--text3); }
+.search-input:focus { outline: none; border-color: var(--accent); }
+
+.filter-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text2); font-size: 13px; cursor: pointer; font-family: inherit;
+  transition: all .2s;
+}
+.filter-btn:hover { border-color: var(--border2); color: var(--text); }
+.filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,.08); }
+
+/* ─── FULL OS LIST (Ordens Page) ─── */
+.os-full-list { display: flex; flex-direction: column; gap: 12px; }
+
+.os-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  transition: border-color .2s, transform .2s;
+}
+.os-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+.os-card-top {
+  padding: 18px 20px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.os-card-body { flex: 1; min-width: 0; }
+.os-card-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.os-card-num { font-size: 16px; font-weight: 800; }
+.os-card-desc { font-size: 13px; color: var(--text2); margin: 6px 0; line-height: 1.6; }
+.os-card-meta { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px; }
+.os-card-actions {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 8px; align-items: center;
+}
+.os-card-actions .action-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg3);
+  color: var(--text2); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .2s;
+}
+.os-card-actions .action-btn:hover { border-color: var(--border2); color: var(--text); }
+.os-card-actions .action-btn.primary { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,.08); }
+.os-card-actions .action-btn.danger { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+
+.team-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.team-chip {
+  padding: 3px 10px; border-radius: 20px;
+  background: var(--bg3); border: 1px solid var(--border);
+  font-size: 11px; color: var(--text2);
+}
+
+/* ─── CALENDAR ─── */
+.calendar-wrap {
+  display: grid; grid-template-columns: 1fr 320px; gap: 20px;
+}
+.cal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.cal-month { font-size: 18px; font-weight: 800; }
+.cal-nav { display: flex; gap: 6px; }
+.cal-nav-btn {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text2); font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.cal-nav-btn:hover { border-color: var(--border2); color: var(--text); }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-day-label { text-align: center; font-size: 11px; font-weight: 700; color: var(--text3); padding: 8px 0; text-transform: uppercase; letter-spacing: .5px; }
+.cal-day {
+  aspect-ratio: 1; border-radius: 8px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px; font-weight: 500;
+  border: 1px solid transparent; position: relative;
+  transition: all .15s;
+}
+.cal-day:hover { background: var(--bg3); border-color: var(--border); }
+.cal-day.other-month { color: var(--text3); }
+.cal-day.today { border-color: var(--accent); color: var(--accent); font-weight: 800; }
+.cal-day.has-os::after {
+  content: '';
+  position: absolute; bottom: 4px;
+  display: flex; gap: 2px;
+}
+.cal-dot { width: 5px; height: 5px; border-radius: 50%; margin: 0 1px; }
+.cal-dot.alta { background: var(--red); }
+.cal-dot.média { background: var(--orange); }
+.cal-dot.baixa { background: var(--green); }
+.cal-dots { display: flex; position: absolute; bottom: 4px; }
+
+.cal-day.selected { background: rgba(79,142,247,.12); border-color: var(--accent); }
+
+.cal-sidebar-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.cal-sidebar-title { font-size: 13px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+.cal-os-item {
+  padding: 12px; border-radius: 8px; background: var(--bg3);
+  border: 1px solid var(--border); margin-bottom: 8px;
+  cursor: pointer; transition: border-color .2s;
+}
+.cal-os-item:hover { border-color: var(--border2); }
+.cal-os-item-num { font-size: 13px; font-weight: 700; }
+.cal-os-item-unit { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.cal-legend { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.cal-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+.cal-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* ─── UNIDADES ─── */
+.unidades-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+
+.unidades-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+.unit-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  transition: border-color .2s, transform .2s;
+}
+.unit-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.unit-card-top {
+  padding: 3px 0 0;
+  background: linear-gradient(to bottom, rgba(79,142,247,.07), transparent);
+}
+.unit-card-body { padding: 18px 18px 14px; }
+.unit-icon {
+  width: 46px; height: 46px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 12px;
+}
+.unit-icon.ubs { background: rgba(99,102,241,.15); color: #a5b4fc; }
+.unit-icon.upa { background: var(--red-dim); color: var(--red); }
+.unit-icon.hospital { background: var(--orange-dim); color: var(--orange); }
+.unit-icon.cme { background: rgba(6,182,212,.15); color: #67e8f9; }
+
+.unit-name { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+.unit-address { font-size: 12px; color: var(--text3); display: flex; align-items: flex-start; gap: 4px; line-height: 1.4; margin-bottom: 8px; }
+.unit-contact { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+.unit-resp { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
+.unit-card-footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 8px;
+}
+.unit-card-footer button {
+  flex: 1; padding: 8px; border-radius: 8px;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text2); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.unit-card-footer button:hover { border-color: var(--border2); color: var(--text); }
+.unit-status-badge {
+  position: absolute; top: 12px; right: 12px;
+}
+
+/* ─── MATERIAIS ─── */
+.mat-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+
+.mat-table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.mat-table { width: 100%; border-collapse: collapse; }
+.mat-table th {
+  padding: 13px 16px; text-align: left;
+  font-size: 11px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .5px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+}
+.mat-table td {
+  padding: 14px 16px; font-size: 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.mat-table tr:last-child td { border-bottom: none; }
+.mat-table tr:hover td { background: rgba(255,255,255,0.02); }
+.mat-name { font-weight: 600; }
+.mat-qty { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+.mat-qty.low { color: var(--red); }
+.mat-qty.ok { color: var(--green); }
+.mat-cost { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text2); }
+
+/* ─── TÉCNICOS ─── */
+.tec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.tec-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: border-color .2s; position: relative;
+}
+.tec-card:hover { border-color: var(--border2); }
+.tec-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; color: #fff;
+}
+.tec-name { font-size: 16px; font-weight: 700; }
+.tec-spec { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.tec-stats { display: flex; gap: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.tec-stat { text-align: center; }
+.tec-stat-val { font-size: 20px; font-weight: 800; }
+.tec-stat-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; }
+.tec-online {
+  position: absolute; top: 16px; right: 16px;
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.tec-online.ativo { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.tec-online.inativo { background: var(--text3); }
+
+/* ─── RELATÓRIOS ─── */
+.rel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
+.chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.chart-card-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+.chart-canvas-wrap { height: 220px; position: relative; }
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+  z-index: 9000;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 16px; width: 100%; max-width: 620px;
+  max-height: 90vh; overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn .25s cubic-bezier(.4,0,.2,1);
+}
+.modal.wide { max-width: 780px; }
+@keyframes modalIn { from { opacity:0; transform: scale(.95) translateY(8px); } to { opacity:1; transform: scale(1) translateY(0); } }
+
+.modal-head {
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-head-title { font-size: 17px; font-weight: 800; }
+.modal-close {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--bg3); border: none; color: var(--text2);
+  font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.modal-close:hover { background: var(--red-dim); color: var(--red); }
+.modal-body { padding: 24px; overflow-y: auto; max-height: calc(90vh - 130px); }
+.modal-foot {
+  padding: 16px 24px; border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* ─── FORM ─── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 16px; }
+.form-group:last-child { margin-bottom: 0; }
+.form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 10px 14px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-size: 14px; font-family: inherit;
+  transition: border-color .2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.form-input::placeholder { color: var(--text3); }
+.form-select option { background: var(--bg3); }
+.form-textarea { resize: vertical; min-height: 90px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.form-divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* ─── BUTTONS ─── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: inherit; border: 1px solid var(--border);
+  background: var(--bg3); color: var(--text2);
+  transition: all .2s;
+}
+.btn:hover { border-color: var(--border2); color: var(--text); }
+.btn.btn-accent {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-color: transparent; color: #fff;
+  box-shadow: 0 4px 16px rgba(79,142,247,.3);
+}
+.btn.btn-accent:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,142,247,.4); }
+.btn.btn-green { background: var(--green-dim); border-color: rgba(34,211,160,.3); color: var(--green); }
+.btn.btn-green:hover { background: rgba(34,211,160,.25); }
+.btn.btn-red { background: var(--red-dim); border-color: rgba(247,107,107,.3); color: var(--red); }
+.btn.btn-red:hover { background: rgba(247,107,107,.25); }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center; padding: 48px 20px;
+  color: var(--text3);
+}
+.empty-state i { font-size: 48px; margin-bottom: 16px; opacity: .4; }
+.empty-state h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--text2); }
+.empty-state p { font-size: 13px; }
+
+/* ─── TOAST ─── */
+.toast-container {
+  position: fixed; top: 20px; right: 20px;
+  z-index: 99999; display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 18px;
+  min-width: 300px; max-width: 380px;
+  box-shadow: var(--shadow);
+  animation: toastIn .3s cubic-bezier(.4,0,.2,1);
+  border-left: 3px solid var(--green);
+}
+.toast.error { border-left-color: var(--red); }
+.toast.warning { border-left-color: var(--orange); }
+.toast.info { border-left-color: var(--accent); }
+@keyframes toastIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+.toast-icon { font-size: 18px; flex-shrink: 0; }
+.toast.success .toast-icon { color: var(--green); }
+.toast.error .toast-icon { color: var(--red); }
+.toast.warning .toast-icon { color: var(--orange); }
+.toast.info .toast-icon { color: var(--accent); }
+.toast-msg { font-size: 13px; font-weight: 500; }
+
+/* ─── CONFIRM DIALOG ─── */
+.confirm-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+  z-index: 99000;
+  display: none; align-items: center; justify-content: center;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-box {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 28px; max-width: 380px; width: 90%;
+  box-shadow: var(--shadow-lg); text-align: center;
+  animation: modalIn .2s ease;
+}
+.confirm-icon { font-size: 40px; margin-bottom: 14px; color: var(--red); }
+.confirm-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+.confirm-msg { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
+.confirm-btns { display: flex; gap: 10px; justify-content: center; }
+
+/* ─── TABS ─── */
+.tabs { display: flex; gap: 2px; padding: 4px; background: var(--bg3); border-radius: 10px; margin-bottom: 20px; width: fit-content; }
+.tab {
+  padding: 8px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  color: var(--text3); transition: all .2s; border: none; background: none; font-family: inherit;
+}
+.tab.active { background: var(--bg2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1200px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-grid { grid-template-columns: 1fr; }
+  .unidades-grid { grid-template-columns: repeat(2, 1fr); }
+  .tec-grid { grid-template-columns: repeat(2, 1fr); }
+  .rel-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .menu-btn { display: flex !important; }
+  .calendar-wrap { grid-template-columns: 1fr; }
+  .unidades-grid { grid-template-columns: 1fr; }
+  .unidades-stats { grid-template-columns: 1fr; }
+  .mat-stats { grid-template-columns: 1fr; }
+  .tec-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .content { padding: 16px; }
+  .page-header { flex-direction: column; gap: 12px; }
+  .page-actions { flex-wrap: wrap; }
+  .mat-table { font-size: 12px; }
+}
+
+/* ─── PRINT ─── */
+@media print {
+  .sidebar, .topbar, .modal-overlay, .toast-container { display: none !important; }
+  .main { margin-left: 0; }
+  body { background: #fff; color: #000; }
+  .card, .os-card { border: 1px solid #ddd; background: #fff; }
+  .badge { border: 1px solid; }
+}
+
+/* ─── SCROLL TO TOP ─── */
+.scroll-top {
+  position: fixed; bottom: 24px; right: 24px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  border: none; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(79,142,247,.4);
+  opacity: 0; pointer-events: none;
+  transition: all .2s;
+}
+.scroll-top.visible { opacity: 1; pointer-events: all; }
+
+/* ─── OVERLAY (mobile sidebar) ─── */
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 899;
+}
+.sidebar-overlay.open { display: block; }
+
+/* ─── PROGRESS BAR ─── */
+.progress-bar { height: 6px; background: var(--bg3); border-radius: 10px; overflow: hidden; margin-top: 6px; }
+.progress-fill { height: 100%; border-radius: 10px; transition: width .6s ease; }
+
+/* ─── OS DETAIL VIEW ─── */
+.detail-grid { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+.detail-field { margin-bottom: 16px; }
+.detail-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.detail-value { font-size: 14px; font-weight: 500; }
+
+/* ─── IMPORT/EXPORT ─── */
+.file-input { display: none; }
+
+/* ─── NO ITEMS ─── */
+.no-results {
+  text-align: center; padding: 40px;
+  color: var(--text3); font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark"><i class="fas fa-wrench"></i></div>
+    <div class="logo-text">
+      <strong>ManutOS</strong>
+      <span>Prefeitura Mogi das Cruzes</span>
+    </div>
+  </div>
+
+  <nav class="nav-section">
+    <div class="nav-group-label" style="margin-top:8px">Principal</div>
+    <button class="nav-item active" onclick="showPage('dashboard')">
+      <i class="fas fa-chart-treemap"></i> Dashboard
+    </button>
+    <button class="nav-item" onclick="showPage('ordens')">
+      <i class="fas fa-clipboard-list"></i> Ordens de Serviço
+      <span class="nav-badge" id="nav-badge-os">0</span>
+    </button>
+    <button class="nav-item" onclick="showPage('calendario')">
+      <i class="fas fa-calendar-days"></i> Calendário
+    </button>
+
+    <div class="nav-group-label" style="margin-top:16px">Cadastros</div>
+    <button class="nav-item" onclick="showPage('unidades')">
+      <i class="fas fa-building-columns"></i> Unidades de Saúde
+    </button>
+    <button class="nav-item" onclick="showPage('materiais')">
+      <i class="fas fa-boxes-stacked"></i> Materiais
+      <span class="nav-badge" id="nav-badge-mat" style="display:none">!</span>
+    </button>
+    <button class="nav-item" onclick="showPage('tecnicos')">
+      <i class="fas fa-user-gear"></i> Técnicos
+    </button>
+
+    <div class="nav-group-label" style="margin-top:16px">Análise</div>
+    <button class="nav-item" onclick="showPage('relatorios')">
+      <i class="fas fa-chart-pie"></i> Relatórios
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-avatar">SM</div>
+    <div style="flex:1;min-width:0">
+      <div class="user-name">Secretaria Municipal</div>
+      <div class="user-role">Gestão de Manutenção</div>
+      <div id="online-status" style="font-size:10px;color:var(--text3);margin-top:3px;display:flex;align-items:center;gap:4px">
+        <i class="fas fa-circle" style="font-size:8px;color:var(--text3)"></i> Conectando...
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="breadcrumb">ManutOS · <span id="page-label">Dashboard</span></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="document.getElementById('importFileInput').click()">
+        <i class="fas fa-file-import"></i> Importar
+      </button>
+      <button class="topbar-btn" onclick="exportData()">
+        <i class="fas fa-download"></i> Backup
+      </button>
+      <button class="topbar-btn btn-primary" onclick="openNewOSModal()">
+        <i class="fas fa-plus"></i> Nova OS
+      </button>
+      <input type="file" id="importFileInput" class="file-input" accept=".json" onchange="importData(event)">
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle" id="dash-date-label">Visão geral do sistema de manutenção</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-icon blue"><i class="fas fa-clock-rotate-left"></i></div>
+          <div class="stat-value" id="st-abertas">–</div>
+          <div class="stat-label">OSs em Aberto</div>
+          <div class="stat-sub"><span id="st-abertas-sub">–</span></div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon red"><i class="fas fa-triangle-exclamation"></i></div>
+          <div class="stat-value" id="st-alta">–</div>
+          <div class="stat-label">Alta Prioridade</div>
+          <div class="stat-sub"><span id="st-alta-sub" class="alert">–</span></div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon green"><i class="fas fa-circle-check"></i></div>
+          <div class="stat-value" id="st-concluidas">–</div>
+          <div class="stat-label">Concluídas</div>
+          <div class="stat-sub"><span id="st-conc-sub" class="good">–</span></div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-icon purple"><i class="fas fa-building-columns"></i></div>
+          <div class="stat-value" id="st-unidades">–</div>
+          <div class="stat-label">Unidades Ativas</div>
+          <div class="stat-sub"><span id="st-uni-sub">–</span></div>
+        </div>
+      </div>
+
+      <div id="dash-alert" class="alert-banner" style="display:none">
+        <div class="alert-banner-left">
+          <div class="alert-banner-icon"><i class="fas fa-boxes-stacked"></i></div>
+          <div>
+            <h4>Atenção: Materiais com estoque baixo</h4>
+            <p id="dash-alert-text">–</p>
+          </div>
+        </div>
+        <button class="btn-alert" onclick="showPage('materiais')">Ver Materiais <i class="fas fa-arrow-right"></i></button>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Ordens de Serviço Recentes</span>
+            <button class="btn-link" onclick="showPage('ordens')">Ver todas <i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="os-list" id="dash-os-list"></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <div class="card-head"><span class="card-title">Distribuição por Prioridade</span></div>
+            <div class="card-body">
+              <div style="height:180px;position:relative">
+                <canvas id="chartPriority"></canvas>
+              </div>
+              <div id="chart-legend" style="display:flex;gap:12px;justify-content:center;margin-top:12px;flex-wrap:wrap"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Top Tipos de Serviço</span></div>
+            <div class="card-body" id="top-services" style="padding-top:12px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ORDENS ══ -->
+    <div class="page" id="page-ordens">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Ordens de Serviço</h1>
+          <p class="page-subtitle">Gerencie todas as solicitações de manutenção</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-accent" onclick="openNewOSModal()"><i class="fas fa-plus"></i> Nova OS</button>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <i class="fas fa-magnifying-glass"></i>
+          <input class="search-input" id="os-search" placeholder="Buscar por número, unidade ou descrição..." oninput="renderOrdensPage()">
+        </div>
+        <select class="filter-btn" id="os-filter-status" onchange="renderOrdensPage()" style="cursor:pointer">
+          <option value="">Todos os Status</option>
+          <option>Aberta</option>
+          <option>Em Andamento</option>
+          <option>Aguardando Material</option>
+          <option>Concluída</option>
+          <option>Cancelada</option>
+        </select>
+        <select class="filter-btn" id="os-filter-prior" onchange="renderOrdensPage()" style="cursor:pointer">
+          <option value="">Todas as Prioridades</option>
+          <option>Alta</option>
+          <option>Média</option>
+          <option>Baixa</option>
+        </select>
+      </div>
+
+      <div class="os-full-list" id="os-full-list"></div>
+    </div>
+
+    <!-- ══ CALENDÁRIO ══ -->
+    <div class="page" id="page-calendario">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Calendário de OSs</h1>
+          <p class="page-subtitle">Programação e prazos das ordens de serviço</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn" onclick="calToday()"><i class="fas fa-calendar-day"></i> Ir para Hoje</button>
+        </div>
+      </div>
+      <div class="calendar-wrap">
+        <div class="card">
+          <div class="card-body">
+            <div class="cal-header">
+              <span class="cal-month" id="cal-month-label"></span>
+              <div class="cal-nav">
+                <button class="cal-nav-btn" onclick="calPrev()"><i class="fas fa-chevron-left"></i></button>
+                <button class="cal-nav-btn" onclick="calNext()"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+            <div class="cal-grid" id="cal-grid"></div>
+          </div>
+        </div>
+        <div>
+          <div class="cal-sidebar-card">
+            <div class="cal-sidebar-title" id="cal-selected-label">Selecione uma data</div>
+            <div id="cal-day-list"><div class="empty-state"><i class="fas fa-calendar-day"></i><h3>Nenhuma data selecionada</h3><p>Clique em uma data para ver as OSs</p></div></div>
+            <div class="cal-legend">
+              <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red)"></div> Alta Prioridade</div>
+              <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--orange)"></div> Média Prioridade</div>
+              <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green)"></div> Baixa Prioridade</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ UNIDADES ══ -->
+    <div class="page" id="page-unidades">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Unidades de Saúde</h1>
+          <p class="page-subtitle">Gerencie as unidades de saúde do município</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-accent" onclick="openUnitModal()"><i class="fas fa-plus"></i> Nova Unidade</button>
+        </div>
+      </div>
+      <div class="unidades-stats">
+        <div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-building-columns"></i></div><div class="stat-value" id="uni-total">–</div><div class="stat-label">Total de Unidades</div></div>
+        <div class="stat-card green"><div class="stat-icon green"><i class="fas fa-circle-check"></i></div><div class="stat-value" id="uni-ativas">–</div><div class="stat-label">Unidades Ativas</div></div>
+        <div class="stat-card purple"><div class="stat-icon purple"><i class="fas fa-house-medical"></i></div><div class="stat-value" id="uni-ubs">–</div><div class="stat-label">UBS</div></div>
+      </div>
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <i class="fas fa-magnifying-glass"></i>
+          <input class="search-input" id="uni-search" placeholder="Buscar por nome, endereço ou bairro..." oninput="renderUnidades()">
+        </div>
+      </div>
+      <div class="unidades-grid" id="unidades-grid"></div>
+    </div>
+
+    <!-- ══ MATERIAIS ══ -->
+    <div class="page" id="page-materiais">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Materiais</h1>
+          <p class="page-subtitle">Controle de estoque e materiais de manutenção</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn" onclick="document.getElementById('csvFileInput').click()"><i class="fas fa-file-csv"></i> Importar CSV</button>
+          <input type="file" id="csvFileInput" class="file-input" accept=".csv" onchange="importCSV(event)">
+          <button class="btn btn-accent" onclick="openMatModal()"><i class="fas fa-plus"></i> Novo Material</button>
+        </div>
+      </div>
+      <div class="mat-stats">
+        <div class="stat-card purple"><div class="stat-icon purple"><i class="fas fa-boxes-stacked"></i></div><div class="stat-value" id="mat-total">–</div><div class="stat-label">Total de Materiais</div></div>
+        <div class="stat-card red"><div class="stat-icon red"><i class="fas fa-triangle-exclamation"></i></div><div class="stat-value" id="mat-baixo">–</div><div class="stat-label">Estoque Baixo</div></div>
+        <div class="stat-card green"><div class="stat-icon green"><i class="fas fa-dollar-sign"></i></div><div class="stat-value" id="mat-valor">–</div><div class="stat-label">Valor em Estoque</div></div>
+      </div>
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <i class="fas fa-magnifying-glass"></i>
+          <input class="search-input" id="mat-search" placeholder="Buscar materiais..." oninput="renderMateriais()">
+        </div>
+        <select class="filter-btn" id="mat-filter-cat" onchange="renderMateriais()" style="cursor:pointer">
+          <option value="">Todas as Categorias</option>
+          <option>Elétrico</option><option>Hidráulico</option><option>Pintura</option>
+          <option>Alvenaria</option><option>Carpintaria</option><option>HVAC</option><option>Outros</option>
+        </select>
+      </div>
+      <div class="mat-table-wrap">
+        <table class="mat-table">
+          <thead>
+            <tr>
+              <th>Material</th><th>Categoria</th><th>Estoque</th>
+              <th>Unidade</th><th>Custo Unit.</th><th>Fornecedor</th>
+              <th>Status</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="mat-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ TÉCNICOS ══ -->
+    <div class="page" id="page-tecnicos">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Técnicos</h1>
+          <p class="page-subtitle">Equipe de manutenção do município</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-accent" onclick="openTecModal()"><i class="fas fa-plus"></i> Novo Técnico</button>
+        </div>
+      </div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
+        <div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-users"></i></div><div class="stat-value" id="tec-total">–</div><div class="stat-label">Total de Técnicos</div></div>
+        <div class="stat-card green"><div class="stat-icon green"><i class="fas fa-user-check"></i></div><div class="stat-value" id="tec-ativos">–</div><div class="stat-label">Ativos</div></div>
+        <div class="stat-card orange"><div class="stat-icon orange"><i class="fas fa-clipboard-check"></i></div><div class="stat-value" id="tec-os-abertas">–</div><div class="stat-label">OSs em Andamento</div></div>
+      </div>
+      <div class="tec-grid" id="tec-grid"></div>
+    </div>
+
+    <!-- ══ RELATÓRIOS ══ -->
+    <div class="page" id="page-relatorios">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Relatórios</h1>
+          <p class="page-subtitle">Análise gerencial do sistema de manutenção</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn" onclick="printReport()"><i class="fas fa-print"></i> Imprimir Relatório</button>
+        </div>
+      </div>
+      <div class="stats-grid" style="margin-bottom:24px">
+        <div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-file-lines"></i></div><div class="stat-value" id="rel-total-os">–</div><div class="stat-label">Total de OSs</div></div>
+        <div class="stat-card green"><div class="stat-icon green"><i class="fas fa-percent"></i></div><div class="stat-value" id="rel-taxa">–</div><div class="stat-label">Taxa de Conclusão</div></div>
+        <div class="stat-card red"><div class="stat-icon red"><i class="fas fa-hourglass-half"></i></div><div class="stat-value" id="rel-atrasadas">–</div><div class="stat-label">OSs Atrasadas</div></div>
+        <div class="stat-card orange"><div class="stat-icon orange"><i class="fas fa-boxes-stacked"></i></div><div class="stat-value" id="rel-mat-custo">–</div><div class="stat-label">Custo Estoque</div></div>
+      </div>
+      <div class="rel-grid">
+        <div class="chart-card"><div class="chart-card-title">OSs por Status</div><div class="chart-canvas-wrap"><canvas id="chartStatus"></canvas></div></div>
+        <div class="chart-card"><div class="chart-card-title">OSs por Tipo de Serviço</div><div class="chart-canvas-wrap"><canvas id="chartTipo"></canvas></div></div>
+        <div class="chart-card"><div class="chart-card-title">Evolução Mensal (últimos 6 meses)</div><div class="chart-canvas-wrap"><canvas id="chartMensal"></canvas></div></div>
+        <div class="chart-card"><div class="chart-card-title">OSs por Unidade</div><div class="chart-canvas-wrap"><canvas id="chartUnidade"></canvas></div></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ═══ MODAL: NOVA/EDITAR OS ═══ -->
+<div class="modal-overlay" id="modal-os">
+  <div class="modal wide">
+    <div class="modal-head">
+      <span class="modal-head-title" id="modal-os-title">Nova Ordem de Serviço</span>
+      <button class="modal-close" onclick="closeModal('modal-os')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Número da OS</label>
+          <input class="form-input" id="os-num" readonly style="opacity:.6">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data de Abertura</label>
+          <input type="date" class="form-input" id="os-data">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Unidade de Saúde</label>
+        <select class="form-select" id="os-unidade"></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tipo de Serviço</label>
+          <select class="form-select" id="os-tipo">
+            <option value="">Selecione...</option>
+            <option>Limpeza</option><option>Elétrica</option><option>Hidráulica</option>
+            <option>Pintura</option><option>Carpintaria</option><option>Ar Condicionado</option>
+            <option>Alvenaria</option><option>Manutenção Geral</option><option>Outros</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Prioridade</label>
+          <select class="form-select" id="os-prioridade">
+            <option>Baixa</option><option selected>Média</option><option>Alta</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Prazo</label>
+          <input type="date" class="form-input" id="os-prazo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="os-status">
+            <option selected>Aberta</option>
+            <option>Em Andamento</option>
+            <option>Aguardando Material</option>
+            <option>Concluída</option>
+            <option>Cancelada</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descrição do Problema</label>
+        <textarea class="form-textarea" id="os-desc" placeholder="Descreva detalhadamente o problema e o serviço necessário..."></textarea>
+      </div>
+      <div class="form-divider"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Responsável / Solicitante</label>
+          <input class="form-input" id="os-responsavel" placeholder="Nome do responsável">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Técnico(s) Designado(s)</label>
+          <select class="form-select" id="os-tecnico">
+            <option value="">Nenhum designado</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Observações</label>
+        <textarea class="form-textarea" id="os-obs" placeholder="Observações adicionais..." style="min-height:60px"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('modal-os')">Cancelar</button>
+      <button class="btn btn-accent" onclick="saveOS()"><i class="fas fa-floppy-disk"></i> Salvar OS</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: DETALHE OS ═══ -->
+<div class="modal-overlay" id="modal-os-detail">
+  <div class="modal wide">
+    <div class="modal-head">
+      <span class="modal-head-title" id="detail-num">OS #–</span>
+      <button class="modal-close" onclick="closeModal('modal-os-detail')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="modal-os-detail-body"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('modal-os-detail')">Fechar</button>
+      <button class="btn" onclick="printOS()" ><i class="fas fa-print"></i> Imprimir</button>
+      <button class="btn btn-accent" id="detail-edit-btn"><i class="fas fa-pen"></i> Editar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: UNIDADE ═══ -->
+<div class="modal-overlay" id="modal-unit">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-head-title" id="modal-unit-title">Nova Unidade de Saúde</span>
+      <button class="modal-close" onclick="closeModal('modal-unit')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nome da Unidade</label>
+          <input class="form-input" id="unit-nome" placeholder="Ex: UBS Jardim Santista">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo</label>
+          <select class="form-select" id="unit-tipo">
+            <option>UBS</option><option>UPA</option><option>Hospital</option><option>CME</option><option>Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Endereço</label>
+        <input class="form-input" id="unit-end" placeholder="Rua, número">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Bairro</label>
+          <input class="form-input" id="unit-bairro" placeholder="Bairro">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Telefone</label>
+          <input class="form-input" id="unit-tel" placeholder="(11) 4798-0000">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Diretor / Responsável</label>
+          <input class="form-input" id="unit-resp" placeholder="Nome e cargo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="unit-status">
+            <option value="true">Ativa</option><option value="false">Inativa</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('modal-unit')">Cancelar</button>
+      <button class="btn btn-accent" onclick="saveUnit()"><i class="fas fa-floppy-disk"></i> Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: MATERIAL ═══ -->
+<div class="modal-overlay" id="modal-mat">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-head-title" id="modal-mat-title">Novo Material</span>
+      <button class="modal-close" onclick="closeModal('modal-mat')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nome do Material</label>
+          <input class="form-input" id="mat-nome" placeholder="Ex: Cabo 6mm">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoria</label>
+          <select class="form-select" id="mat-cat">
+            <option>Elétrico</option><option>Hidráulico</option><option>Pintura</option>
+            <option>Alvenaria</option><option>Carpintaria</option><option>HVAC</option><option>Outros</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Estoque Atual</label>
+          <input type="number" class="form-input" id="mat-qtd" placeholder="0" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estoque Mínimo</label>
+          <input type="number" class="form-input" id="mat-min" placeholder="0" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Unidade de Medida</label>
+          <input class="form-input" id="mat-un" placeholder="metro, unidade, saco...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Custo Unitário (R$)</label>
+          <input type="number" class="form-input" id="mat-custo" placeholder="0.00" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fornecedor</label>
+        <input class="form-input" id="mat-forn" placeholder="Nome do fornecedor">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('modal-mat')">Cancelar</button>
+      <button class="btn btn-accent" onclick="saveMat()"><i class="fas fa-floppy-disk"></i> Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: TÉCNICO ═══ -->
+<div class="modal-overlay" id="modal-tec">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-head-title" id="modal-tec-title">Novo Técnico</span>
+      <button class="modal-close" onclick="closeModal('modal-tec')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nome Completo</label>
+          <input class="form-input" id="tec-nome" placeholder="Nome do técnico">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Especialidade</label>
+          <select class="form-select" id="tec-esp">
+            <option>Elétrica</option><option>Hidráulica</option><option>Pintura</option>
+            <option>Ar Condicionado</option><option>Carpintaria</option><option>Alvenaria</option>
+            <option>Limpeza</option><option>Manutenção Geral</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Telefone</label>
+          <input class="form-input" id="tec-tel" placeholder="(11) 99999-0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Registro / Matrícula</label>
+          <input class="form-input" id="tec-reg" placeholder="Nº de registro">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input type="email" class="form-input" id="tec-email" placeholder="email@prefeitura.sp.gov.br">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="tec-status">
+            <option value="true">Ativo</option><option value="false">Inativo</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('modal-tec')">Cancelar</button>
+      <button class="btn btn-accent" onclick="saveTec()"><i class="fas fa-floppy-disk"></i> Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONFIRM ═══ -->
+<div class="confirm-overlay" id="confirm-dialog">
+  <div class="confirm-box">
+    <div class="confirm-icon"><i class="fas fa-trash-can"></i></div>
+    <div class="confirm-title" id="confirm-title">Confirmar exclusão</div>
+    <div class="confirm-msg" id="confirm-msg">Esta ação não pode ser desfeita.</div>
+    <div class="confirm-btns">
+      <button class="btn" onclick="closeConfirm()">Cancelar</button>
+      <button class="btn btn-red" id="confirm-ok-btn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ═══ SCRIPT ═══ -->
+<script>
+// ════════════════════════════════════════════════════════════
+// SUPABASE CONFIG
+// ════════════════════════════════════════════════════════════
+const SUPA_URL  = 'https://whrvsexngphgucpnibus.supabase.co';
+const SUPA_KEY  = 'sb_publishable_HMw5Zod77Ym_PC1fbowfPA_7By4N_mS';
+const HEADERS   = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` };
+
+// ── Supabase REST helpers ────────────────────────────────────
+async function sbSelect(table, params = '') {
+  const r = await fetch(`${SUPA_URL}/rest/v1/${table}?${params}`, { headers: HEADERS });
+  if (!r.ok) throw new Error(`SELECT ${table}: ${r.status} ${await r.text()}`);
+  return r.json();
+}
+async function sbInsert(table, body) {
+  const r = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
+    method: 'POST', headers: { ...HEADERS, 'Prefer': 'return=representation' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error(`INSERT ${table}: ${r.status} ${await r.text()}`);
+  return r.json();
+}
+async function sbUpdate(table, id, body) {
+  const r = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'PATCH', headers: { ...HEADERS, 'Prefer': 'return=representation' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error(`UPDATE ${table}: ${r.status} ${await r.text()}`);
+  return r.json();
+}
+async function sbDelete(table, id) {
+  const r = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'DELETE', headers: HEADERS
+  });
+  if (!r.ok) throw new Error(`DELETE ${table}: ${r.status} ${await r.text()}`);
+  return true;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let db = { ordens: [], unidades: [], materiais: [], tecnicos: [] };
+let editingId   = null;
+let editingType = null;
+let calDate     = new Date();
+let calSelectedDate = null;
+let chartPriorityInst = null, chartStatusInst = null;
+let chartTipoInst = null, chartMensalInst = null, chartUnidadeInst = null;
+
+const AVATAR_COLORS = ['#4f8ef7','#22d3a0','#f76b6b','#a78bfa','#f5a742','#06b6d4','#ec4899','#84cc16'];
+function getAvatarColor(str) {
+  let h = 0;
+  for (let c of (str||'')) h = (h*31 + c.charCodeAt(0)) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[h];
+}
+function initials(name) {
+  return (name||'?').split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// LOADING OVERLAY
+// ════════════════════════════════════════════════════════════
+function showLoading(msg = 'Carregando...') {
+  let el = document.getElementById('global-loading');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'global-loading';
+    el.style.cssText = `position:fixed;inset:0;background:rgba(15,17,23,.85);backdrop-filter:blur(6px);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px`;
+    el.innerHTML = `<div style="width:44px;height:44px;border:3px solid rgba(79,142,247,.2);border-top-color:#4f8ef7;border-radius:50%;animation:spin .7s linear infinite"></div><span style="color:#8892a4;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px" id="loading-msg">${msg}</span>`;
+    if (!document.querySelector('#spin-style')) {
+      const s = document.createElement('style');
+      s.id = 'spin-style';
+      s.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+      document.head.appendChild(s);
+    }
+    document.body.appendChild(el);
+  } else {
+    document.getElementById('loading-msg').textContent = msg;
+    el.style.display = 'flex';
+  }
+}
+function hideLoading() {
+  const el = document.getElementById('global-loading');
+  if (el) el.style.display = 'none';
+}
+
+// ════════════════════════════════════════════════════════════
+// INIT — carrega tudo do Supabase
+// ════════════════════════════════════════════════════════════
+async function initDB() {
+  showLoading('Conectando ao banco de dados...');
+  try {
+    const [ordens, unidades, materiais, tecnicos] = await Promise.all([
+      sbSelect('ordens_servico', 'order=created_at.desc'),
+      sbSelect('unidades',       'order=nome.asc'),
+      sbSelect('materiais',      'order=nome.asc'),
+      sbSelect('tecnicos',       'order=nome.asc'),
+    ]);
+    db.ordens    = ordens    || [];
+    db.unidades  = unidades  || [];
+    db.materiais = materiais || [];
+    db.tecnicos  = tecnicos  || [];
+    hideLoading();
+    renderDashboard();
+  } catch(e) {
+    hideLoading();
+    console.error(e);
+    showDBError(e.message);
+  }
+}
+
+function showDBError(msg) {
+  document.body.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f1117;font-family:'Plus Jakarta Sans',sans-serif">
+      <div style="text-align:center;padding:40px;max-width:480px">
+        <div style="font-size:56px;margin-bottom:20px">⚠️</div>
+        <h2 style="color:#e8eaf0;font-size:22px;margin-bottom:12px">Erro ao conectar ao banco</h2>
+        <p style="color:#8892a4;font-size:14px;margin-bottom:8px">Verifique se as tabelas foram criadas no Supabase e se as credenciais estão corretas.</p>
+        <p style="color:#5a6478;font-size:12px;margin-bottom:24px;font-family:monospace">${msg}</p>
+        <button onclick="location.reload()" style="padding:10px 24px;background:#4f8ef7;border:none;border-radius:8px;color:#fff;font-size:14px;cursor:pointer;font-family:inherit">Tentar novamente</button>
+      </div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════
+function fmtDate(s) {
+  if (!s) return '–';
+  const [y,m,d] = s.split('T')[0].split('-');
+  return `${d}/${m}/${y}`;
+}
+function toDateInput(s) { return s ? s.split('T')[0] : ''; }
+function isLate(os) {
+  return os.prazo && new Date(os.prazo) < new Date() &&
+         os.status !== 'Concluída' && os.status !== 'Cancelada';
+}
+function getPriorClass(p='') { return p.toLowerCase().replace(' ',''); }
+function getStatusClass(s) {
+  const m = {'Aberta':'aberta','Em Andamento':'andamento','Aguardando Material':'aguardando','Concluída':'concluida','Cancelada':'cancelada'};
+  return m[s]||'aberta';
+}
+function getUnitIcon(t) { return {UBS:'🏥',UPA:'🚑',Hospital:'🏨',CME:'🔬',Outro:'🏢'}[t]||'🏢'; }
+function getUnitClass(t) { return (t||'outro').toLowerCase(); }
+function fmtCurrency(v) {
+  return 'R$ ' + Number(v||0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function generateOSNum() {
+  const y = new Date().getFullYear();
+  const nums = db.ordens
+    .map(o=>o.numero||'')
+    .filter(n=>n.includes(`#${y}-`))
+    .map(n=>{ const m=n.match(/(\d+)$/); return m?parseInt(m[1]):0; });
+  return `OS #${y}-${String(Math.max(0,...nums)+1).padStart(3,'0')}`;
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+const PAGE_LABELS = {
+  dashboard:'Dashboard', ordens:'Ordens de Serviço', calendario:'Calendário',
+  unidades:'Unidades de Saúde', materiais:'Materiais', tecnicos:'Técnicos', relatorios:'Relatórios'
+};
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => {
+    b.classList.remove('active');
+    if (b.getAttribute('onclick')?.includes(`'${id}'`)) b.classList.add('active');
+  });
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('page-label').textContent = PAGE_LABELS[id]||id;
+  closeSidebar();
+  const renders = { dashboard:renderDashboard, ordens:renderOrdensPage, calendario:renderCalendar,
+    unidades:renderUnidades, materiais:renderMateriais, tecnicos:renderTecnicos, relatorios:renderRelatorios };
+  renders[id]?.();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+async function reloadAndRender(page) {
+  showLoading('Sincronizando...');
+  try {
+    const [ordens, unidades, materiais, tecnicos] = await Promise.all([
+      sbSelect('ordens_servico', 'order=created_at.desc'),
+      sbSelect('unidades',       'order=nome.asc'),
+      sbSelect('materiais',      'order=nome.asc'),
+      sbSelect('tecnicos',       'order=nome.asc'),
+    ]);
+    db.ordens    = ordens    || [];
+    db.unidades  = unidades  || [];
+    db.materiais = materiais || [];
+    db.tecnicos  = tecnicos  || [];
+  } catch(e) { toast('Erro ao sincronizar: '+e.message,'error'); }
+  hideLoading();
+  const renders = { dashboard:renderDashboard, ordens:renderOrdensPage, unidades:renderUnidades,
+    materiais:renderMateriais, tecnicos:renderTecnicos, relatorios:renderRelatorios };
+  renders[page]?.();
+}
+
+// ════════════════════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════════════════════
+function renderDashboard() {
+  const today = new Date();
+  const months = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  document.getElementById('dash-date-label').textContent =
+    `${today.getDate()} de ${months[today.getMonth()]} de ${today.getFullYear()}`;
+
+  const abertas    = db.ordens.filter(o=>['Aberta','Em Andamento','Aguardando Material'].includes(o.status)).length;
+  const alta       = db.ordens.filter(o=>o.prioridade==='Alta' && !['Concluída','Cancelada'].includes(o.status)).length;
+  const conc       = db.ordens.filter(o=>o.status==='Concluída').length;
+  const atrasadas  = db.ordens.filter(o=>isLate(o)).length;
+  const uniAtivas  = db.unidades.filter(u=>u.ativa).length;
+  const matBaixo   = db.materiais.filter(m=>m.qtd<m.min).length;
+
+  document.getElementById('st-abertas').textContent    = abertas;
+  document.getElementById('st-alta').textContent       = alta;
+  document.getElementById('st-concluidas').textContent = conc;
+  document.getElementById('st-unidades').textContent   = uniAtivas;
+  document.getElementById('st-abertas-sub').textContent = `${db.ordens.length} total`;
+  const subAlta = document.getElementById('st-alta-sub');
+  subAlta.textContent  = atrasadas > 0 ? `${atrasadas} atrasada${atrasadas>1?'s':''}` : 'Nenhuma atrasada';
+  subAlta.className    = atrasadas > 0 ? 'alert' : 'good';
+  document.getElementById('st-conc-sub').textContent   = 'Este mês';
+  document.getElementById('st-uni-sub').textContent    = `${db.unidades.length} total`;
+
+  const alertEl = document.getElementById('dash-alert');
+  if (matBaixo > 0) {
+    alertEl.style.display = 'flex';
+    document.getElementById('dash-alert-text').textContent =
+      `${matBaixo} material${matBaixo>1?'is precisam':'precisa'} de reposição`;
+  } else { alertEl.style.display = 'none'; }
+
+  document.getElementById('nav-badge-os').textContent     = abertas;
+  document.getElementById('nav-badge-os').style.display   = abertas > 0 ? '' : 'none';
+  document.getElementById('nav-badge-mat').style.display  = matBaixo > 0 ? '' : 'none';
+
+  // Recent OS list
+  const list   = document.getElementById('dash-os-list');
+  const recent = db.ordens.slice(0, 6);
+  if (!recent.length) {
+    list.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard"></i><h3>Nenhuma OS</h3><p>Clique em "Nova OS" para começar</p></div>`;
+  } else {
+    list.innerHTML = recent.map(os => {
+      const pc   = getPriorClass(os.prioridade);
+      const late = isLate(os);
+      return `<div class="os-item" onclick="viewOSDetail('${os.id}')">
+        <div class="os-indicator ${late?'alta':os.status==='Concluída'?'concluida':pc}">
+          <i class="fas fa-${os.prioridade==='Alta'?'bolt':os.prioridade==='Média'?'cube':'check'}"></i>
+        </div>
+        <div class="os-body">
+          <div class="os-row1">
+            <span class="os-num">${os.numero}</span>
+            <span class="badge badge-${pc}">${os.prioridade}</span>
+            <span class="badge badge-${getStatusClass(os.status)}">${os.status}</span>
+          </div>
+          <div class="os-unit"><i class="fas fa-location-dot"></i>${os.unidade_nome||os.unidade||'–'}</div>
+          <div class="os-desc">${os.descricao||''}</div>
+          <div class="os-footer">
+            <span class="os-date"><i class="fas fa-calendar"></i>${fmtDate(os.data_abertura)}</span>
+            <span class="os-date ${late?'late':''}"><i class="fas fa-clock"></i>Prazo: ${fmtDate(os.prazo)}${late?' · ATRASADA':''}</span>
+            <span class="badge" style="background:var(--bg3);color:var(--text3)">${os.tipo||''}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  renderPriorityChart();
+  renderTopServices();
+}
+
+function renderPriorityChart() {
+  const alta  = db.ordens.filter(o=>o.prioridade==='Alta'  && !['Concluída','Cancelada'].includes(o.status)).length;
+  const media = db.ordens.filter(o=>o.prioridade==='Média' && !['Concluída','Cancelada'].includes(o.status)).length;
+  const baixa = db.ordens.filter(o=>o.prioridade==='Baixa' && !['Concluída','Cancelada'].includes(o.status)).length;
+  const ctx   = document.getElementById('chartPriority').getContext('2d');
+  if (chartPriorityInst) { chartPriorityInst.destroy(); chartPriorityInst = null; }
+  chartPriorityInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels:['Alta','Média','Baixa'], datasets:[{ data:[alta,media,baixa], backgroundColor:['#f76b6b','#f5a742','#22d3a0'], borderWidth:0, hoverOffset:4 }] },
+    options: { responsive:true, maintainAspectRatio:false, cutout:'72%', plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label(c){ const t=c.dataset.data.reduce((a,b)=>a+b,0); return ` ${c.label}: ${c.parsed} (${t?Math.round(c.parsed/t*100):0}%)`; } } } } }
+  });
+  const total = alta+media+baixa;
+  document.getElementById('chart-legend').innerHTML = [['Alta','#f76b6b',alta],['Média','#f5a742',media],['Baixa','#22d3a0',baixa]]
+    .map(([l,c,v])=>`<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:50%;background:${c}"></div>${l} <strong style="color:var(--text)">${v}</strong></div>`).join('');
+}
+
+function renderTopServices() {
+  const tipos = {};
+  db.ordens.forEach(o=>{ if(o.tipo) tipos[o.tipo]=(tipos[o.tipo]||0)+1; });
+  const sorted = Object.entries(tipos).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const max    = Math.max(...sorted.map(s=>s[1]),1);
+  const colors = ['var(--accent)','var(--purple)','var(--green)','var(--orange)','var(--red)','#06b6d4'];
+  document.getElementById('top-services').innerHTML = sorted.map(([tipo,cnt],i)=>`
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+        <span style="font-weight:600;color:var(--text)">${tipo}</span>
+        <span style="color:var(--text3);font-weight:700">${cnt}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${cnt/max*100}%;background:${colors[i]}"></div></div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// ORDENS PAGE
+// ════════════════════════════════════════════════════════════
+function renderOrdensPage() {
+  const search      = (document.getElementById('os-search').value||'').toLowerCase();
+  const filterStatus = document.getElementById('os-filter-status').value;
+  const filterPrior  = document.getElementById('os-filter-prior').value;
+  let list = db.ordens.filter(o=>
+    (!search || (o.numero||'').toLowerCase().includes(search) ||
+      (o.unidade_nome||o.unidade||'').toLowerCase().includes(search) ||
+      (o.descricao||'').toLowerCase().includes(search) ||
+      (o.tipo||'').toLowerCase().includes(search)) &&
+    (!filterStatus || o.status===filterStatus) &&
+    (!filterPrior  || o.prioridade===filterPrior)
+  );
+  const container = document.getElementById('os-full-list');
+  if (!list.length) {
+    container.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard"></i><h3>Nenhuma OS encontrada</h3><p>Ajuste os filtros ou crie uma nova OS</p></div>`;
+    return;
+  }
+  container.innerHTML = list.map(os => {
+    const pc   = getPriorClass(os.prioridade);
+    const late = isLate(os);
+    const nome = os.unidade_nome || os.unidade || '–';
+    return `<div class="os-card">
+      <div class="os-card-top">
+        <div class="os-indicator ${late?'alta':pc}" style="margin-top:0;width:48px;height:48px;flex-shrink:0">
+          <i class="fas fa-${os.prioridade==='Alta'?'bolt':os.prioridade==='Média'?'cube':'check'}"></i>
+        </div>
+        <div class="os-card-body">
+          <div class="os-card-header">
+            <span class="os-card-num">${os.numero}</span>
+            <span class="badge badge-${pc}">${os.prioridade}</span>
+            <span class="badge badge-${getStatusClass(os.status)}">${os.status}</span>
+            <span class="badge" style="background:var(--bg3);color:var(--text3)">${os.tipo||''}</span>
+            ${late?`<span class="badge badge-alta">ATRASADA</span>`:''}
+          </div>
+          <div class="os-unit"><i class="fas fa-location-dot"></i> <strong>${nome}</strong></div>
+          <div class="os-card-desc">${os.descricao||''}</div>
+          <div class="os-card-meta">
+            <span class="os-date"><i class="fas fa-calendar-plus"></i> Abertura: ${fmtDate(os.data_abertura)}</span>
+            <span class="os-date ${late?'late':''}"><i class="fas fa-calendar-xmark"></i> Prazo: ${fmtDate(os.prazo)}</span>
+            ${os.responsavel?`<span class="os-date"><i class="fas fa-user"></i> ${os.responsavel}</span>`:''}
+          </div>
+          ${os.tecnico?`<div class="team-chips"><span class="team-chip"><i class="fas fa-user-gear"></i> ${os.tecnico}</span></div>`:''}
+        </div>
+      </div>
+      <div class="os-card-actions">
+        <button class="action-btn primary" onclick="viewOSDetail('${os.id}')"><i class="fas fa-eye"></i> Ver Detalhes</button>
+        <button class="action-btn" onclick="editOS('${os.id}')"><i class="fas fa-pen"></i> Editar</button>
+        <button class="action-btn" onclick="printOSById('${os.id}')"><i class="fas fa-print"></i> Imprimir</button>
+        <button class="action-btn danger" onclick="confirmDelete('os','${os.id}')"><i class="fas fa-trash"></i> Excluir</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// OS CRUD
+// ════════════════════════════════════════════════════════════
+function openNewOSModal() {
+  editingId = null; editingType = 'os';
+  document.getElementById('modal-os-title').textContent = 'Nova Ordem de Serviço';
+  document.getElementById('os-num').value       = generateOSNum();
+  document.getElementById('os-data').value      = new Date().toISOString().split('T')[0];
+  document.getElementById('os-prioridade').value = 'Média';
+  document.getElementById('os-status').value    = 'Aberta';
+  document.getElementById('os-desc').value      = '';
+  document.getElementById('os-obs').value       = '';
+  document.getElementById('os-responsavel').value = '';
+  document.getElementById('os-tipo').value      = '';
+  document.getElementById('os-prazo').value     = '';
+
+  const sel = document.getElementById('os-unidade');
+  sel.innerHTML = '<option value="">Selecione...</option>' +
+    db.unidades.filter(u=>u.ativa).map(u=>`<option value="${u.id}">${u.nome}</option>`).join('');
+
+  const tecSel = document.getElementById('os-tecnico');
+  tecSel.innerHTML = '<option value="">Nenhum designado</option>' +
+    db.tecnicos.filter(t=>t.ativo).map(t=>`<option value="${t.nome}">${t.nome} · ${t.esp}</option>`).join('');
+
+  openModal('modal-os');
+}
+
+function editOS(id) {
+  const os = db.ordens.find(o=>String(o.id)===String(id));
+  if (!os) return;
+  editingId = id; editingType = 'os';
+  document.getElementById('modal-os-title').textContent = `Editar ${os.numero}`;
+  document.getElementById('os-num').value        = os.numero;
+  document.getElementById('os-data').value       = toDateInput(os.data_abertura);
+  document.getElementById('os-prazo').value      = toDateInput(os.prazo);
+  document.getElementById('os-desc').value       = os.descricao||'';
+  document.getElementById('os-obs').value        = os.obs||'';
+  document.getElementById('os-responsavel').value = os.responsavel||'';
+  document.getElementById('os-prioridade').value = os.prioridade;
+  document.getElementById('os-status').value     = os.status;
+  document.getElementById('os-tipo').value       = os.tipo||'';
+
+  const sel = document.getElementById('os-unidade');
+  sel.innerHTML = '<option value="">Selecione...</option>' +
+    db.unidades.map(u=>`<option value="${u.id}" ${String(u.id)===String(os.unidade_id)?'selected':''}>${u.nome}</option>`).join('');
+
+  const tecSel = document.getElementById('os-tecnico');
+  tecSel.innerHTML = '<option value="">Nenhum designado</option>' +
+    db.tecnicos.filter(t=>t.ativo).map(t=>`<option value="${t.nome}" ${t.nome===os.tecnico?'selected':''}>${t.nome} · ${t.esp}</option>`).join('');
+
+  closeModal('modal-os-detail');
+  openModal('modal-os');
+}
+
+async function saveOS() {
+  const unidadeId = document.getElementById('os-unidade').value;
+  const tipo      = document.getElementById('os-tipo').value;
+  const desc      = document.getElementById('os-desc').value.trim();
+  const prazo     = document.getElementById('os-prazo').value;
+
+  if (!unidadeId) { toast('Selecione uma unidade de saúde','warning'); return; }
+  if (!tipo)      { toast('Selecione o tipo de serviço','warning'); return; }
+  if (!desc)      { toast('Preencha a descrição do problema','warning'); return; }
+  if (!prazo)     { toast('Informe o prazo','warning'); return; }
+
+  const unidade = db.unidades.find(u=>String(u.id)===String(unidadeId));
+  const payload = {
+    unidade_id:   unidadeId,
+    unidade_nome: unidade?.nome || '',
+    tipo, descricao: desc, prazo,
+    prioridade:   document.getElementById('os-prioridade').value,
+    status:       document.getElementById('os-status').value,
+    data_abertura: document.getElementById('os-data').value,
+    responsavel:  document.getElementById('os-responsavel').value,
+    tecnico:      document.getElementById('os-tecnico').value,
+    obs:          document.getElementById('os-obs').value
+  };
+
+  showLoading('Salvando OS...');
+  try {
+    if (editingId) {
+      payload.numero = document.getElementById('os-num').value;
+      await sbUpdate('ordens_servico', editingId, payload);
+      toast('OS atualizada com sucesso!');
+    } else {
+      payload.numero = document.getElementById('os-num').value;
+      await sbInsert('ordens_servico', payload);
+      toast('Ordem de Serviço criada!');
+    }
+    closeModal('modal-os');
+    await reloadAndRender('ordens');
+  } catch(e) {
+    hideLoading();
+    toast('Erro ao salvar: '+e.message,'error');
+  }
+}
+
+async function deleteOS(id) {
+  showLoading('Excluindo...');
+  try {
+    await sbDelete('ordens_servico', id);
+    toast('OS excluída','info');
+    await reloadAndRender('ordens');
+  } catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+}
+
+function viewOSDetail(id) {
+  const os = db.ordens.find(o=>String(o.id)===String(id));
+  if (!os) return;
+  const late = isLate(os);
+  const pc   = getPriorClass(os.prioridade);
+  document.getElementById('detail-num').textContent = os.numero;
+  document.getElementById('detail-edit-btn').onclick = () => editOS(id);
+  document.getElementById('modal-os-detail-body').innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+      <span class="badge badge-${pc}" style="font-size:13px;padding:5px 12px">${os.prioridade}</span>
+      <span class="badge badge-${getStatusClass(os.status)}" style="font-size:13px;padding:5px 12px">${os.status}</span>
+      <span class="badge" style="background:var(--bg3);color:var(--text3);font-size:13px;padding:5px 12px">${os.tipo||''}</span>
+      ${late?`<span class="badge badge-alta" style="font-size:13px;padding:5px 12px">ATRASADA</span>`:''}
+    </div>
+    <div class="detail-grid">
+      <div>
+        <div class="detail-field"><div class="detail-label">Unidade</div>
+          <div class="detail-value"><i class="fas fa-location-dot" style="color:var(--accent);margin-right:6px"></i>${os.unidade_nome||os.unidade||'–'}</div></div>
+        <div class="detail-field"><div class="detail-label">Descrição</div>
+          <div class="detail-value" style="line-height:1.7;color:var(--text2)">${os.descricao||'–'}</div></div>
+        ${os.obs?`<div class="detail-field"><div class="detail-label">Observações</div><div class="detail-value" style="color:var(--text2)">${os.obs}</div></div>`:''}
+      </div>
+      <div>
+        <div class="detail-field"><div class="detail-label">Data de Abertura</div><div class="detail-value">${fmtDate(os.data_abertura)}</div></div>
+        <div class="detail-field"><div class="detail-label">Prazo</div>
+          <div class="detail-value"><span style="color:${late?'var(--red)':'var(--text)'}">${fmtDate(os.prazo)}${late?' · Atrasada':''}</span></div></div>
+        <div class="detail-field"><div class="detail-label">Responsável</div><div class="detail-value">${os.responsavel||'–'}</div></div>
+        <div class="detail-field"><div class="detail-label">Técnico Designado</div><div class="detail-value">${os.tecnico||'–'}</div></div>
+      </div>
+    </div>`;
+  openModal('modal-os-detail');
+}
+
+function printOSById(id) { viewOSDetail(id); setTimeout(()=>window.print(),400); }
+function printOS()        { window.print(); }
+
+// ════════════════════════════════════════════════════════════
+// CALENDÁRIO
+// ════════════════════════════════════════════════════════════
+function renderCalendar() {
+  const months = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const y = calDate.getFullYear(), m = calDate.getMonth();
+  document.getElementById('cal-month-label').textContent = `${months[m]} de ${y}`;
+  const firstDay    = new Date(y,m,1).getDay();
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  const prevDays    = new Date(y,m,0).getDate();
+  const today       = new Date(); today.setHours(0,0,0,0);
+  const grid        = document.getElementById('cal-grid');
+  const dayLabels   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  let html = dayLabels.map(d=>`<div class="cal-day-label">${d}</div>`).join('');
+  for (let i=firstDay-1;i>=0;i--)
+    html += `<div class="cal-day other-month"><span>${prevDays-i}</span></div>`;
+  for (let d=1;d<=daysInMonth;d++) {
+    const dateStr  = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayDate  = new Date(y,m,d);
+    const isToday  = dayDate.getTime()===today.getTime();
+    const isSel    = calSelectedDate===dateStr;
+    const osOnDay  = db.ordens.filter(o=>toDateInput(o.prazo)===dateStr);
+    const dots     = osOnDay.length
+      ? '<div class="cal-dots">'+osOnDay.slice(0,3).map(o=>`<div class="cal-dot ${getPriorClass(o.prioridade)}"></div>`).join('')+'</div>'
+      : '';
+    html += `<div class="cal-day ${isToday?'today':''} ${isSel?'selected':''}" onclick="calSelectDay('${dateStr}')">
+      <span>${d}</span>${dots}</div>`;
+  }
+  const remaining = (7 - (firstDay+daysInMonth)%7) % 7;
+  for (let i=1;i<=remaining;i++) html += `<div class="cal-day other-month"><span>${i}</span></div>`;
+  grid.innerHTML = html;
+  if (calSelectedDate) calShowDay(calSelectedDate);
+}
+function calSelectDay(dateStr) { calSelectedDate=dateStr; renderCalendar(); calShowDay(dateStr); }
+function calShowDay(dateStr) {
+  const [y,m,d] = dateStr.split('-');
+  document.getElementById('cal-selected-label').textContent = `${d}/${m}/${y}`;
+  const osOnDay = db.ordens.filter(o=>toDateInput(o.prazo)===dateStr);
+  const list    = document.getElementById('cal-day-list');
+  if (!osOnDay.length) {
+    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px"><i class="fas fa-check-circle" style="color:var(--green)"></i><br>Nenhuma OS nesta data</div>`;
+    return;
+  }
+  list.innerHTML = osOnDay.map(os=>`
+    <div class="cal-os-item" onclick="viewOSDetail('${os.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span class="cal-os-item-num">${os.numero}</span>
+        <span class="badge badge-${getPriorClass(os.prioridade)}">${os.prioridade}</span>
+      </div>
+      <div class="cal-os-item-unit">${os.unidade_nome||os.unidade||'–'}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px">${os.tipo||''} · ${os.status}</div>
+    </div>`).join('');
+}
+function calPrev()  { calDate.setMonth(calDate.getMonth()-1); renderCalendar(); }
+function calNext()  { calDate.setMonth(calDate.getMonth()+1); renderCalendar(); }
+function calToday() { calDate=new Date(); renderCalendar(); }
+
+// ════════════════════════════════════════════════════════════
+// UNIDADES
+// ════════════════════════════════════════════════════════════
+function renderUnidades() {
+  const search = (document.getElementById('uni-search')||{value:''}).value.toLowerCase();
+  const list   = db.unidades.filter(u=>!search ||
+    u.nome.toLowerCase().includes(search) ||
+    (u.endereco||'').toLowerCase().includes(search) ||
+    (u.bairro||'').toLowerCase().includes(search));
+  document.getElementById('uni-total').textContent  = db.unidades.length;
+  document.getElementById('uni-ativas').textContent = db.unidades.filter(u=>u.ativa).length;
+  document.getElementById('uni-ubs').textContent    = db.unidades.filter(u=>u.tipo==='UBS').length;
+  const grid = document.getElementById('unidades-grid');
+  if (!list.length) { grid.innerHTML=`<div class="empty-state"><i class="fas fa-building-columns"></i><h3>Nenhuma unidade encontrada</h3></div>`; return; }
+  grid.innerHTML = list.map(u=>{
+    const oc  = db.ordens.filter(o=>String(o.unidade_id)===String(u.id)).length;
+    const ucl = getUnitClass(u.tipo);
+    const gradients = {UBS:'var(--accent),var(--accent2)',UPA:'var(--red),#f59e0b',Hospital:'var(--orange),#f97316',CME:'var(--green),#06b6d4',Outro:'var(--purple),#6366f1'};
+    return `<div class="unit-card">
+      <div style="height:4px;background:linear-gradient(90deg,${gradients[u.tipo]||gradients.Outro})"></div>
+      <div class="unit-card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="unit-icon ${ucl}">${getUnitIcon(u.tipo)}</div>
+          <span class="badge ${u.ativa?'badge-concluida':'badge-cancelada'}">${u.ativa?'Ativa':'Inativa'}</span>
+        </div>
+        <div class="unit-name">${u.nome}</div>
+        <div style="margin-bottom:10px"><span class="badge badge-${ucl}">${u.tipo}</span></div>
+        ${u.endereco?`<div class="unit-address"><i class="fas fa-location-dot"></i>${u.endereco}${u.bairro?', '+u.bairro:''}</div>`:''}
+        ${u.tel?`<div class="unit-contact"><i class="fas fa-phone"></i>${u.tel}</div>`:''}
+        ${u.resp?`<div class="unit-resp"><i class="fas fa-user-tie"></i>${u.resp}</div>`:''}
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <span style="font-size:12px;color:var(--text3)">${oc} OS${oc!==1?'s':''} no histórico</span>
+        </div>
+      </div>
+      <div class="unit-card-footer">
+        <button onclick="editUnit('${u.id}')"><i class="fas fa-pen"></i> Editar</button>
+        <button onclick="confirmDelete('unit','${u.id}')" style="color:var(--red)"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openUnitModal(id) {
+  editingId = id||null; editingType = 'unit';
+  const u = id ? db.unidades.find(x=>String(x.id)===String(id)) : null;
+  document.getElementById('modal-unit-title').textContent = u ? 'Editar Unidade' : 'Nova Unidade de Saúde';
+  document.getElementById('unit-nome').value   = u?.nome||'';
+  document.getElementById('unit-tipo').value   = u?.tipo||'UBS';
+  document.getElementById('unit-end').value    = u?.endereco||'';
+  document.getElementById('unit-bairro').value = u?.bairro||'';
+  document.getElementById('unit-tel').value    = u?.tel||'';
+  document.getElementById('unit-resp').value   = u?.resp||'';
+  document.getElementById('unit-status').value = String(u?.ativa!==false);
+  openModal('modal-unit');
+}
+function editUnit(id) { openUnitModal(id); }
+
+async function saveUnit() {
+  const nome = document.getElementById('unit-nome').value.trim();
+  if (!nome) { toast('Informe o nome da unidade','warning'); return; }
+  const payload = {
+    nome, tipo: document.getElementById('unit-tipo').value,
+    endereco: document.getElementById('unit-end').value,
+    bairro: document.getElementById('unit-bairro').value,
+    tel: document.getElementById('unit-tel').value,
+    resp: document.getElementById('unit-resp').value,
+    ativa: document.getElementById('unit-status').value==='true'
+  };
+  showLoading('Salvando...');
+  try {
+    if (editingId) { await sbUpdate('unidades', editingId, payload); toast('Unidade atualizada!'); }
+    else           { await sbInsert('unidades', payload); toast('Unidade criada!'); }
+    closeModal('modal-unit');
+    await reloadAndRender('unidades');
+  } catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+}
+
+async function deleteUnit(id) {
+  showLoading('Excluindo...');
+  try { await sbDelete('unidades', id); toast('Unidade excluída','info'); await reloadAndRender('unidades'); }
+  catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+}
+
+// ════════════════════════════════════════════════════════════
+// MATERIAIS
+// ════════════════════════════════════════════════════════════
+function renderMateriais() {
+  const search    = (document.getElementById('mat-search')||{value:''}).value.toLowerCase();
+  const filterCat = (document.getElementById('mat-filter-cat')||{value:''}).value;
+  const list = db.materiais.filter(m=>
+    (!search || m.nome.toLowerCase().includes(search) || (m.forn||'').toLowerCase().includes(search)) &&
+    (!filterCat || m.cat===filterCat));
+  document.getElementById('mat-total').textContent = db.materiais.length;
+  document.getElementById('mat-baixo').textContent = db.materiais.filter(m=>m.qtd<m.min).length;
+  document.getElementById('mat-valor').textContent = fmtCurrency(db.materiais.reduce((s,m)=>s+(m.qtd*m.custo),0));
+  const catColors = {Elétrico:'badge-aberta',Hidráulico:'badge-andamento',Pintura:'badge-média',Alvenaria:'badge-concluida',Carpintaria:'badge-baixa',HVAC:'badge-aguardando',Outros:'badge-cancelada'};
+  const tbody = document.getElementById('mat-tbody');
+  if (!list.length) { tbody.innerHTML=`<tr><td colspan="8"><div class="no-results">Nenhum material encontrado</div></td></tr>`; return; }
+  tbody.innerHTML = list.map(m=>{
+    const low = m.qtd < m.min;
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:8px;background:${low?'var(--red-dim)':'var(--green-dim)'};display:flex;align-items:center;justify-content:center;color:${low?'var(--red)':'var(--green)'}"><i class="fas fa-cube" style="font-size:13px"></i></div>
+        <span class="mat-name">${m.nome}</span></div></td>
+      <td><span class="badge ${catColors[m.cat]||'badge-cancelada'}">${m.cat}</span></td>
+      <td><span class="mat-qty ${low?'low':'ok'}">${m.qtd} <span style="font-size:10px;color:var(--text3)">(mín:${m.min})</span></span></td>
+      <td style="color:var(--text3);font-size:13px">${m.un||'–'}</td>
+      <td class="mat-cost">${fmtCurrency(m.custo)}</td>
+      <td style="font-size:13px;color:var(--text2)">${m.forn||'–'}</td>
+      <td><span class="badge ${low?'badge-alta':'badge-concluida'}">${low?'<i class="fas fa-triangle-exclamation"></i> Baixo':'<i class="fas fa-check"></i> OK'}</span></td>
+      <td>
+        <button onclick="editMat('${m.id}')" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:15px;padding:4px 6px"><i class="fas fa-pen"></i></button>
+        <button onclick="confirmDelete('mat','${m.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;padding:4px 6px"><i class="fas fa-trash"></i></button>
+      </td></tr>`;
+  }).join('');
+}
+
+function openMatModal() {
+  editingId=null; editingType='mat';
+  document.getElementById('modal-mat-title').textContent = 'Novo Material';
+  ['mat-nome','mat-qtd','mat-min','mat-un','mat-custo','mat-forn'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mat-cat').value='Elétrico';
+  openModal('modal-mat');
+}
+function editMat(id) {
+  const m = db.materiais.find(x=>String(x.id)===String(id));
+  if (!m) return;
+  editingId=id; editingType='mat';
+  document.getElementById('modal-mat-title').textContent='Editar Material';
+  document.getElementById('mat-nome').value  = m.nome;
+  document.getElementById('mat-cat').value   = m.cat;
+  document.getElementById('mat-qtd').value   = m.qtd;
+  document.getElementById('mat-min').value   = m.min;
+  document.getElementById('mat-un').value    = m.un||'';
+  document.getElementById('mat-custo').value = m.custo;
+  document.getElementById('mat-forn').value  = m.forn||'';
+  openModal('modal-mat');
+}
+async function saveMat() {
+  const nome = document.getElementById('mat-nome').value.trim();
+  if (!nome) { toast('Informe o nome do material','warning'); return; }
+  const payload = {
+    nome, cat: document.getElementById('mat-cat').value,
+    qtd: parseFloat(document.getElementById('mat-qtd').value)||0,
+    min: parseFloat(document.getElementById('mat-min').value)||0,
+    un: document.getElementById('mat-un').value,
+    custo: parseFloat(document.getElementById('mat-custo').value)||0,
+    forn: document.getElementById('mat-forn').value
+  };
+  showLoading('Salvando...');
+  try {
+    if (editingId) { await sbUpdate('materiais', editingId, payload); toast('Material atualizado!'); }
+    else           { await sbInsert('materiais', payload); toast('Material adicionado!'); }
+    closeModal('modal-mat');
+    await reloadAndRender('materiais');
+  } catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+}
+async function deleteMat(id) {
+  showLoading('Excluindo...');
+  try { await sbDelete('materiais', id); toast('Material excluído','info'); await reloadAndRender('materiais'); }
+  catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+}
+
+// ════════════════════════════════════════════════════════════
+// TÉCNICOS
+// ════════════════════════════════════════════════════════════
+function renderTecnicos() {
+  document.getElementById('tec-total').textContent     = db.tecnicos.length;
+  document.getElementById('tec-ativos').textContent    = db.tecnicos.filter(t=>t.ativo).length;
+  document.getElementById('tec-os-abertas').textContent = db.ordens.filter(o=>o.status==='Em Andamento').length;
+  const grid = document.getElementById('tec-grid');
+  if (!db.tecnicos.length) { grid.innerHTML=`<div class="empty-state"><i class="fas fa-users"></i><h3>Nenhum técnico cadastrado</h3></div>`; return; }
+  grid.innerHTML = db.tecnicos.map(t=>{
+    const color     = getAvatarColor(t.nome);
+    const osTotal   = db.ordens.filter(o=>o.tecnico===t.nome).length;
+    const osAndamento = db.ordens.filter(o=>o.tecnico===t.nome && o.status==='Em Andamento').length;
+    return `<div class="tec-card">
+      <div class="tec-online ${t.ativo?'ativo':'inativo'}"></div>
+      <div class="tec-avatar" style="background:linear-gradient(135deg,${color},${color}99)">${initials(t.nome)}</div>
+      <div>
+        <div class="tec-name">${t.nome}</div>
+        <div class="tec-spec"><i class="fas fa-tools" style="margin-right:4px"></i>${t.esp}</div>
+        ${t.tel?`<div style="font-size:12px;color:var(--text3);margin-top:4px"><i class="fas fa-phone" style="margin-right:4px"></i>${t.tel}</div>`:''}
+        ${t.email?`<div style="font-size:12px;color:var(--text3);margin-top:2px"><i class="fas fa-envelope" style="margin-right:4px"></i>${t.email}</div>`:''}
+        ${t.reg?`<div style="font-size:11px;color:var(--text3);margin-top:2px;font-family:'JetBrains Mono',monospace">${t.reg}</div>`:''}
+      </div>
+      <div class="tec-stats">
+        <div class="tec-stat"><div class="tec-stat-val" style="color:var(--accent)">${osTotal}</div><div class="tec-stat-lbl">Total OSs</div></div>
+        <div class="tec-stat"><div class="tec-stat-val" style="color:var(--orange)">${osAndamento}</div><div class="tec-stat-lbl">Em Andamento</div></div>
+        <div class="tec-stat"><div class="tec-stat-val" style="color:${t.ativo?'var(--green)':'var(--text3)'}">${t.ativo?'Ativo':'Inativo'}</div><div class="tec-stat-lbl">Status</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="action-btn" onclick="editTec('${t.id}')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit"><i class="fas fa-pen"></i>Editar</button>
+        <button onclick="confirmDelete('tec','${t.id}')" style="padding:8px 12px;border-radius:8px;border:1px solid rgba(247,107,107,.3);background:var(--red-dim);color:var(--red);font-size:12px;cursor:pointer;font-family:inherit"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openTecModal() {
+  editingId=null; editingType='tec';
+  document.getElementById('modal-tec-title').textContent='Novo Técnico';
+  ['tec-nome','tec-tel','tec-reg','tec-email'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('tec-esp').value='Elétrica';
+  document.getElementById('tec-status').value='true';
+  openModal('modal-tec');
+}
+function editTec(id) {
+  const t = db.tecnicos.find(x=>String(x.id)===String(id));
+  if (!t) return;
+  editingId=id; editingType='tec';
+  document.getElementById('modal-tec-title').textContent='Editar Técnico';
+  document.getElementById('tec-nome').value  = t.nome;
+  document.getElementById('tec-esp').value   = t.esp;
+  document.getElementById('tec-tel').value   = t.tel||'';
+  document.getElementById('tec-reg').value   = t.reg||'';
+  document.getElementById('tec-email').value = t.email||'';
+  document.getElementById('tec-status').value = String(t.ativo);
+  openModal('modal-tec');
+}
+async function saveTec() {
+  const nome = document.getElementById('tec-nome').value.trim();
+  if (!nome) { toast('Informe o nome do técnico','warning'); return; }
+  const payload = {
+    nome, esp: document.getElementById('tec-esp').value,
+    tel: document.getElementById('tec-tel').value,
+    reg: document.getElementById('tec-reg').value,
+    email: document.getElementById('tec-email').value,
+    ativo: document.getElementById('tec-status').value==='true'
+  };
+  showLoading('Salvando...');
+  try {
+    if (editingId) { await sbUpdate('tecnicos', editingId, payload); toast('Técnico atualizado!'); }
+    else           { await sbInsert('tecnicos', payload); toast('Técnico cadastrado!'); }
+    closeModal('modal-tec');
+    await reloadAndRender('tecnicos');
+  } catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+}
+async function deleteTec(id) {
+  showLoading('Excluindo...');
+  try { await sbDelete('tecnicos', id); toast('Técnico excluído','info'); await reloadAndRender('tecnicos'); }
+  catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+}
+
+// ════════════════════════════════════════════════════════════
+// RELATÓRIOS
+// ════════════════════════════════════════════════════════════
+function renderRelatorios() {
+  const total    = db.ordens.length;
+  const conc     = db.ordens.filter(o=>o.status==='Concluída').length;
+  const taxa     = total>0 ? Math.round(conc/total*100) : 0;
+  const atrasadas = db.ordens.filter(o=>isLate(o)).length;
+  const custo    = db.materiais.reduce((s,m)=>s+m.qtd*m.custo,0);
+  document.getElementById('rel-total-os').textContent  = total;
+  document.getElementById('rel-taxa').textContent      = taxa+'%';
+  document.getElementById('rel-atrasadas').textContent = atrasadas;
+  document.getElementById('rel-mat-custo').textContent = fmtCurrency(custo);
+
+  // Status
+  const statusCounts  = {};
+  db.ordens.forEach(o=>{ statusCounts[o.status]=(statusCounts[o.status]||0)+1; });
+  const statusColors  = {'Aberta':'#4f8ef7','Em Andamento':'#a78bfa','Aguardando Material':'#f5a742','Concluída':'#22d3a0','Cancelada':'#5a6478'};
+  if (chartStatusInst)  { chartStatusInst.destroy();  chartStatusInst=null; }
+  chartStatusInst = new Chart(document.getElementById('chartStatus').getContext('2d'), {
+    type:'pie',
+    data:{ labels:Object.keys(statusCounts), datasets:[{ data:Object.values(statusCounts), backgroundColor:Object.keys(statusCounts).map(s=>statusColors[s]||'#5a6478'), borderWidth:0 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{ color:'#8892a4', font:{size:12} } } } }
+  });
+
+  // Tipos
+  const tipoCounts = {};
+  db.ordens.forEach(o=>{ if(o.tipo) tipoCounts[o.tipo]=(tipoCounts[o.tipo]||0)+1; });
+  if (chartTipoInst)   { chartTipoInst.destroy();   chartTipoInst=null; }
+  chartTipoInst = new Chart(document.getElementById('chartTipo').getContext('2d'), {
+    type:'bar',
+    data:{ labels:Object.keys(tipoCounts), datasets:[{ data:Object.values(tipoCounts), backgroundColor:'rgba(79,142,247,0.7)', borderRadius:6, borderWidth:0 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#8892a4',font:{size:11}},grid:{color:'rgba(255,255,255,0.04)'}}, y:{ticks:{color:'#8892a4',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}} } }
+  });
+
+  // Mensal
+  const todayD = new Date();
+  const mLabels=[], mCounts=[];
+  const mNames=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  for (let i=5;i>=0;i--) {
+    const d = new Date(todayD.getFullYear(), todayD.getMonth()-i, 1);
+    mLabels.push(mNames[d.getMonth()]+'/'+String(d.getFullYear()).slice(2));
+    mCounts.push(db.ordens.filter(o=>{ if(!o.data_abertura) return false; const od=new Date(o.data_abertura); return od.getMonth()===d.getMonth()&&od.getFullYear()===d.getFullYear(); }).length);
+  }
+  if (chartMensalInst) { chartMensalInst.destroy(); chartMensalInst=null; }
+  chartMensalInst = new Chart(document.getElementById('chartMensal').getContext('2d'), {
+    type:'line',
+    data:{ labels:mLabels, datasets:[{ label:'OSs Abertas', data:mCounts, borderColor:'#4f8ef7', backgroundColor:'rgba(79,142,247,0.1)', tension:.4, fill:true, pointBackgroundColor:'#4f8ef7', pointRadius:4 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#8892a4'},grid:{color:'rgba(255,255,255,0.04)'}}, y:{ticks:{color:'#8892a4',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}} } }
+  });
+
+  // Por unidade
+  const uniCounts = {};
+  db.ordens.forEach(o=>{ const k=o.unidade_nome||o.unidade||'–'; uniCounts[k]=(uniCounts[k]||0)+1; });
+  if (chartUnidadeInst) { chartUnidadeInst.destroy(); chartUnidadeInst=null; }
+  chartUnidadeInst = new Chart(document.getElementById('chartUnidade').getContext('2d'), {
+    type:'bar',
+    data:{ labels:Object.keys(uniCounts), datasets:[{ data:Object.values(uniCounts), backgroundColor:['#4f8ef7','#a78bfa','#22d3a0','#f5a742','#f76b6b'], borderRadius:6, borderWidth:0 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#8892a4',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}}, y:{ticks:{color:'#8892a4',font:{size:11}},grid:{color:'transparent'}} } }
+  });
+}
+function printReport() { window.print(); }
+
+// ════════════════════════════════════════════════════════════
+// MODALS & CONFIRM
+// ════════════════════════════════════════════════════════════
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target===el) el.classList.remove('open'); });
+});
+
+function confirmDelete(type, id) {
+  const msgs = {
+    os:'Tem certeza que deseja excluir esta Ordem de Serviço? Esta ação não pode ser desfeita.',
+    unit:'Tem certeza que deseja excluir esta unidade?',
+    mat:'Tem certeza que deseja excluir este material?',
+    tec:'Tem certeza que deseja excluir este técnico?'
+  };
+  document.getElementById('confirm-msg').textContent = msgs[type]||'Esta ação não pode ser desfeita.';
+  document.getElementById('confirm-ok-btn').onclick = () => {
+    closeConfirm();
+    if (type==='os')   deleteOS(id);
+    else if (type==='unit') deleteUnit(id);
+    else if (type==='mat')  deleteMat(id);
+    else if (type==='tec')  deleteTec(id);
+  };
+  document.getElementById('confirm-dialog').classList.add('open');
+}
+function closeConfirm() { document.getElementById('confirm-dialog').classList.remove('open'); }
+
+// ════════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════════
+function toast(msg, type='success') {
+  const icons = {success:'circle-check',error:'circle-xmark',warning:'triangle-exclamation',info:'circle-info'};
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<i class="fas fa-${icons[type]||'circle-check'} toast-icon"></i><span class="toast-msg">${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(20px)'; el.style.transition='all .3s'; setTimeout(()=>el.remove(),300); }, 3500);
+}
+
+// ════════════════════════════════════════════════════════════
+// ESC
+// ════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+    document.querySelector('.confirm-overlay.open')?.classList.remove('open');
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  calDate = new Date();
+  initDB();
+});
+</script>
+</body>
+</html>
