@@ -811,1560 +811,1252 @@ body {
   text-align: center; padding: 40px;
   color: var(--text3); font-size: 14px;
 }
-</style>
-</head>
-<body>
 
-<!-- Sidebar Overlay -->
+/* ─── LOGIN SCREEN ─── */
+.login-screen {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 99999; flex-direction: column; gap: 0;
+  animation: fadeIn .4s ease;
+}
+.login-bg {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+}
+.login-bg::before {
+  content: '';
+  position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 800px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(79,142,247,.12) 0%, transparent 70%);
+}
+.login-card {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 40px; width: 100%; max-width: 420px;
+  position: relative; box-shadow: 0 24px 80px rgba(0,0,0,.6);
+  animation: modalIn .4s cubic-bezier(.4,0,.2,1);
+}
+.login-logo {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 32px;
+  justify-content: center;
+}
+.login-logo-mark {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: #fff;
+  box-shadow: 0 8px 24px rgba(79,142,247,.4);
+}
+.login-logo-text strong { font-size: 22px; font-weight: 800; display: block; }
+.login-logo-text span { font-size: 12px; color: var(--text3); }
+.login-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.login-sub { font-size: 13px; color: var(--text3); margin-bottom: 28px; }
+.login-error {
+  background: var(--red-dim); border: 1px solid rgba(247,107,107,.3);
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 13px; color: var(--red); margin-bottom: 16px; display: none;
+}
+.login-footer {
+  text-align: center; margin-top: 24px;
+  font-size: 12px; color: var(--text3);
+}
+
+/* ─── PROFILE BADGE (topbar) ─── */
+.profile-badge {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 14px 6px 6px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 30px; cursor: pointer; transition: border-color .2s;
+}
+.profile-badge:hover { border-color: var(--border2); }
+.profile-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: #fff;
+}
+.profile-info { line-height: 1.2; }
+.profile-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.profile-role { font-size: 10px; color: var(--text3); }
+.profile-dropdown {
+  position: absolute; top: 58px; right: 20px;
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 8px; min-width: 200px;
+  box-shadow: var(--shadow-lg); z-index: 9000;
+  display: none;
+}
+.profile-dropdown.open { display: block; animation: fadeIn .15s ease; }
+.profile-dd-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 8px;
+  font-size: 13px; color: var(--text2); cursor: pointer;
+  transition: background .15s; border: none; background: none;
+  width: 100%; font-family: inherit; text-align: left;
+}
+.profile-dd-item:hover { background: var(--bg3); color: var(--text); }
+.profile-dd-item.danger:hover { background: var(--red-dim); color: var(--red); }
+.profile-dd-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+/* ─── PERFIL BADGE na sidebar ─── */
+.perfil-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+}
+.perfil-gestor  { background: rgba(79,142,247,.15); color: var(--accent); }
+.perfil-tecnico { background: rgba(34,211,160,.15);  color: var(--green);  }
+.perfil-unidade { background: rgba(167,139,250,.15); color: var(--purple); }
+
+/* ─── OS MATERIAIS ─── */
+.mat-os-list { margin-top: 12px; }
+.mat-os-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; background: var(--bg3); border-radius: 8px;
+  margin-bottom: 6px; border: 1px solid var(--border);
+}
+.mat-os-item-name { flex: 1; font-size: 13px; font-weight: 600; }
+.mat-os-item-qty { font-size: 12px; color: var(--text3); font-family: 'JetBrains Mono',monospace; }
+.mat-os-remove {
+  background: none; border: none; color: var(--red);
+  cursor: pointer; font-size: 14px; padding: 2px 4px;
+}
+
+/* ─── STATUS TIMELINE ─── */
+.status-timeline { display: flex; align-items: center; gap: 0; margin: 16px 0; }
+.status-step {
+  flex: 1; text-align: center; position: relative;
+}
+.status-step::after {
+  content: ''; position: absolute; top: 14px; left: 50%; right: -50%;
+  height: 2px; background: var(--border); z-index: 0;
+}
+.status-step:last-child::after { display: none; }
+.status-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg3); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; margin: 0 auto 4px; position: relative; z-index: 1;
+  transition: all .3s;
+}
+.status-step.done .status-dot   { background: var(--green); border-color: var(--green); color: #fff; }
+.status-step.done::after        { background: var(--green); }
+.status-step.active .status-dot { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 12px rgba(79,142,247,.4); }
+.status-step-label { font-size: 10px; color: var(--text3); }
+.status-step.done .status-step-label   { color: var(--green); }
+.status-step.active .status-step-label { color: var(--accent); font-weight: 700; }
+
+/* ─── GESTOR: User management ─── */
+.user-table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.user-table { width: 100%; border-collapse: collapse; }
+.user-table th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); background: var(--bg3); }
+.user-table td { padding: 13px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.user-table tr:last-child td { border-bottom: none; }
+.user-table tr:hover td { background: rgba(255,255,255,.02); }
+</style>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen" class="login-screen">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark"><i class="fas fa-wrench"></i></div>
+      <div class="login-logo-text">
+        <strong>ManutOS</strong>
+        <span>Prefeitura Mogi das Cruzes</span>
+      </div>
+    </div>
+    <div class="login-title">Bem-vindo ao sistema</div>
+    <div class="login-sub">Entre com suas credenciais para acessar</div>
+    <div class="login-error" id="login-error"></div>
+    <div class="form-group">
+      <label class="form-label">E-mail</label>
+      <input type="email" class="form-input" id="login-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="form-group" style="margin-bottom:24px">
+      <label class="form-label">Senha</label>
+      <div style="position:relative">
+        <input type="password" class="form-input" id="login-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:42px">
+        <button onclick="togglePwd()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px" id="pwd-eye"><i class="fas fa-eye"></i></button>
+      </div>
+    </div>
+    <button class="btn btn-accent" onclick="doLogin()" id="login-btn" style="width:100%;justify-content:center;padding:12px">
+      <i class="fas fa-right-to-bracket"></i> Entrar
+    </button>
+    <div class="login-footer">Sistema de Gestão de Manutenção · Secretaria Municipal de Saúde</div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app" style="display:none">
+
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- ═══ SIDEBAR ═══ -->
+<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-mark"><i class="fas fa-wrench"></i></div>
-    <div class="logo-text">
-      <strong>ManutOS</strong>
-      <span>Prefeitura Mogi das Cruzes</span>
-    </div>
+    <div class="logo-text"><strong>ManutOS</strong><span>Prefeitura Mogi das Cruzes</span></div>
   </div>
-
   <nav class="nav-section">
     <div class="nav-group-label" style="margin-top:8px">Principal</div>
-    <button class="nav-item active" onclick="showPage('dashboard')">
-      <i class="fas fa-chart-treemap"></i> Dashboard
-    </button>
-    <button class="nav-item" onclick="showPage('ordens')">
-      <i class="fas fa-clipboard-list"></i> Ordens de Serviço
-      <span class="nav-badge" id="nav-badge-os">0</span>
-    </button>
-    <button class="nav-item" onclick="showPage('calendario')">
-      <i class="fas fa-calendar-days"></i> Calendário
-    </button>
+    <button class="nav-item active" onclick="showPage('dashboard')"><i class="fas fa-chart-treemap"></i> Dashboard</button>
+    <button class="nav-item" onclick="showPage('ordens')"><i class="fas fa-clipboard-list"></i> Ordens de Serviço<span class="nav-badge" id="nav-badge-os" style="display:none">0</span></button>
+    <button class="nav-item" onclick="showPage('calendario')"><i class="fas fa-calendar-days"></i> Calendário</button>
 
-    <div class="nav-group-label" style="margin-top:16px">Cadastros</div>
-    <button class="nav-item" onclick="showPage('unidades')">
-      <i class="fas fa-building-columns"></i> Unidades de Saúde
-    </button>
-    <button class="nav-item" onclick="showPage('materiais')">
-      <i class="fas fa-boxes-stacked"></i> Materiais
-      <span class="nav-badge" id="nav-badge-mat" style="display:none">!</span>
-    </button>
-    <button class="nav-item" onclick="showPage('tecnicos')">
-      <i class="fas fa-user-gear"></i> Técnicos
-    </button>
+    <!-- Só gestor vê estas seções -->
+    <div class="nav-group-label so-gestor" style="margin-top:16px;display:none">Cadastros</div>
+    <button class="nav-item so-gestor" onclick="showPage('unidades')" style="display:none"><i class="fas fa-building-columns"></i> Unidades de Saúde</button>
+    <button class="nav-item so-gestor" onclick="showPage('materiais')" style="display:none"><i class="fas fa-boxes-stacked"></i> Materiais<span class="nav-badge" id="nav-badge-mat" style="display:none">!</span></button>
+    <button class="nav-item so-gestor" onclick="showPage('tecnicos')" style="display:none"><i class="fas fa-user-gear"></i> Técnicos</button>
 
-    <div class="nav-group-label" style="margin-top:16px">Análise</div>
-    <button class="nav-item" onclick="showPage('relatorios')">
-      <i class="fas fa-chart-pie"></i> Relatórios
-    </button>
+    <div class="nav-group-label so-gestor" style="margin-top:16px;display:none">Análise</div>
+    <button class="nav-item so-gestor" onclick="showPage('relatorios')" style="display:none"><i class="fas fa-chart-pie"></i> Relatórios</button>
+    <button class="nav-item so-gestor" onclick="showPage('usuarios')" style="display:none"><i class="fas fa-users-gear"></i> Usuários</button>
   </nav>
-
   <div class="sidebar-footer">
-    <div class="user-avatar">SM</div>
-    <div style="flex:1;min-width:0">
-      <div class="user-name">Secretaria Municipal</div>
-      <div class="user-role">Gestão de Manutenção</div>
-      <div id="online-status" style="font-size:10px;color:var(--text3);margin-top:3px;display:flex;align-items:center;gap:4px">
-        <i class="fas fa-circle" style="font-size:8px;color:var(--text3)"></i> Conectando...
-      </div>
-    </div>
+    <div class="user-avatar" id="sidebar-avatar" style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;background:var(--accent)">?</div>
+    <div><div class="user-name" id="sidebar-nome">–</div><div class="user-role" id="sidebar-role">–</div></div>
   </div>
 </aside>
 
-<!-- ═══ MAIN ═══ -->
+<!-- MAIN -->
 <main class="main">
-  <!-- Topbar -->
   <div class="topbar">
     <div class="topbar-left">
-      <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <button class="menu-btn" onclick="toggleSidebar()" style="display:flex"><i class="fas fa-bars"></i></button>
       <div class="breadcrumb">ManutOS · <span id="page-label">Dashboard</span></div>
     </div>
-    <div class="topbar-right">
-      <button class="topbar-btn" onclick="document.getElementById('importFileInput').click()">
-        <i class="fas fa-file-import"></i> Importar
-      </button>
-      <button class="topbar-btn" onclick="exportData()">
-        <i class="fas fa-download"></i> Backup
-      </button>
-      <button class="topbar-btn btn-primary" onclick="openNewOSModal()">
-        <i class="fas fa-plus"></i> Nova OS
-      </button>
-      <input type="file" id="importFileInput" class="file-input" accept=".json" onchange="importData(event)">
+    <div class="topbar-right" style="position:relative">
+      <button class="btn btn-accent" id="btn-nova-os" onclick="openNewOSModal()" style="display:none"><i class="fas fa-plus"></i> Nova OS</button>
+      <div class="profile-badge" onclick="toggleProfileMenu()" id="profile-badge">
+        <div class="profile-avatar" id="topbar-avatar" style="background:var(--accent)">?</div>
+        <div class="profile-info">
+          <div class="profile-name" id="topbar-nome">–</div>
+          <div class="profile-role" id="topbar-role">–</div>
+        </div>
+        <i class="fas fa-chevron-down" style="font-size:11px;color:var(--text3)"></i>
+      </div>
+      <div class="profile-dropdown" id="profile-dropdown">
+        <div style="padding:10px 12px 8px;border-bottom:1px solid var(--border);margin-bottom:4px">
+          <div style="font-size:13px;font-weight:700" id="dd-nome">–</div>
+          <div style="font-size:11px;color:var(--text3)" id="dd-email">–</div>
+          <div id="dd-chip" style="margin-top:6px"></div>
+        </div>
+        <button class="profile-dd-item" onclick="showPage('meu-perfil');closeProfileMenu()"><i class="fas fa-user"></i> Meu Perfil</button>
+        <div class="profile-dd-divider"></div>
+        <button class="profile-dd-item danger" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i> Sair</button>
+      </div>
     </div>
   </div>
 
-  <!-- Content -->
   <div class="content">
 
-    <!-- ══ DASHBOARD ══ -->
+    <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="page-header">
-        <div>
-          <h1 class="page-title">Dashboard</h1>
-          <p class="page-subtitle" id="dash-date-label">Visão geral do sistema de manutenção</p>
-        </div>
+        <div><h1 class="page-title">Dashboard</h1><p class="page-subtitle" id="dash-date-label">–</p></div>
       </div>
-
       <div class="stats-grid">
-        <div class="stat-card blue">
-          <div class="stat-icon blue"><i class="fas fa-clock-rotate-left"></i></div>
-          <div class="stat-value" id="st-abertas">–</div>
-          <div class="stat-label">OSs em Aberto</div>
-          <div class="stat-sub"><span id="st-abertas-sub">–</span></div>
-        </div>
-        <div class="stat-card red">
-          <div class="stat-icon red"><i class="fas fa-triangle-exclamation"></i></div>
-          <div class="stat-value" id="st-alta">–</div>
-          <div class="stat-label">Alta Prioridade</div>
-          <div class="stat-sub"><span id="st-alta-sub" class="alert">–</span></div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-icon green"><i class="fas fa-circle-check"></i></div>
-          <div class="stat-value" id="st-concluidas">–</div>
-          <div class="stat-label">Concluídas</div>
-          <div class="stat-sub"><span id="st-conc-sub" class="good">–</span></div>
-        </div>
-        <div class="stat-card purple">
-          <div class="stat-icon purple"><i class="fas fa-building-columns"></i></div>
-          <div class="stat-value" id="st-unidades">–</div>
-          <div class="stat-label">Unidades Ativas</div>
-          <div class="stat-sub"><span id="st-uni-sub">–</span></div>
-        </div>
+        <div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-clock-rotate-left"></i></div><div class="stat-value" id="st-abertas">–</div><div class="stat-label">OSs em Aberto</div><div class="stat-sub"><span id="st-abertas-sub">–</span></div></div>
+        <div class="stat-card red"><div class="stat-icon red"><i class="fas fa-triangle-exclamation"></i></div><div class="stat-value" id="st-alta">–</div><div class="stat-label">Alta Prioridade</div><div class="stat-sub"><span id="st-alta-sub" class="alert">–</span></div></div>
+        <div class="stat-card green"><div class="stat-icon green"><i class="fas fa-circle-check"></i></div><div class="stat-value" id="st-concluidas">–</div><div class="stat-label">Concluídas</div><div class="stat-sub"><span id="st-conc-sub">–</span></div></div>
+        <div class="stat-card purple"><div class="stat-icon purple"><i class="fas fa-building-columns"></i></div><div class="stat-value" id="st-unidades">–</div><div class="stat-label">Unidades Ativas</div><div class="stat-sub"><span id="st-uni-sub">–</span></div></div>
       </div>
-
       <div id="dash-alert" class="alert-banner" style="display:none">
-        <div class="alert-banner-left">
-          <div class="alert-banner-icon"><i class="fas fa-boxes-stacked"></i></div>
-          <div>
-            <h4>Atenção: Materiais com estoque baixo</h4>
-            <p id="dash-alert-text">–</p>
-          </div>
-        </div>
+        <div class="alert-banner-left"><div class="alert-banner-icon"><i class="fas fa-boxes-stacked"></i></div><div><h4>Atenção: Materiais com estoque baixo</h4><p id="dash-alert-text">–</p></div></div>
         <button class="btn-alert" onclick="showPage('materiais')">Ver Materiais <i class="fas fa-arrow-right"></i></button>
       </div>
-
       <div class="dash-grid">
-        <div class="card">
-          <div class="card-head">
-            <span class="card-title">Ordens de Serviço Recentes</span>
-            <button class="btn-link" onclick="showPage('ordens')">Ver todas <i class="fas fa-arrow-right"></i></button>
-          </div>
-          <div class="os-list" id="dash-os-list"></div>
-        </div>
-
+        <div class="card"><div class="card-head"><span class="card-title">Ordens Recentes</span><button class="btn-link" onclick="showPage('ordens')">Ver todas <i class="fas fa-arrow-right"></i></button></div><div class="os-list" id="dash-os-list"></div></div>
         <div style="display:flex;flex-direction:column;gap:16px">
-          <div class="card">
-            <div class="card-head"><span class="card-title">Distribuição por Prioridade</span></div>
-            <div class="card-body">
-              <div style="height:180px;position:relative">
-                <canvas id="chartPriority"></canvas>
-              </div>
-              <div id="chart-legend" style="display:flex;gap:12px;justify-content:center;margin-top:12px;flex-wrap:wrap"></div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-head"><span class="card-title">Top Tipos de Serviço</span></div>
-            <div class="card-body" id="top-services" style="padding-top:12px"></div>
-          </div>
+          <div class="card"><div class="card-head"><span class="card-title">Distribuição por Prioridade</span></div><div class="card-body"><div style="height:180px;position:relative"><canvas id="chartPriority"></canvas></div><div id="chart-legend" style="display:flex;gap:12px;justify-content:center;margin-top:12px;flex-wrap:wrap"></div></div></div>
+          <div class="card"><div class="card-head"><span class="card-title">Top Tipos de Serviço</span></div><div class="card-body" id="top-services" style="padding-top:12px"></div></div>
         </div>
       </div>
     </div>
 
-    <!-- ══ ORDENS ══ -->
+    <!-- ORDENS -->
     <div class="page" id="page-ordens">
       <div class="page-header">
-        <div>
-          <h1 class="page-title">Ordens de Serviço</h1>
-          <p class="page-subtitle">Gerencie todas as solicitações de manutenção</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn btn-accent" onclick="openNewOSModal()"><i class="fas fa-plus"></i> Nova OS</button>
-        </div>
+        <div><h1 class="page-title">Ordens de Serviço</h1><p class="page-subtitle" id="ordens-subtitle">Gerencie as solicitações de manutenção</p></div>
+        <div class="page-actions"><button class="btn btn-accent" id="ordens-nova-btn" onclick="openNewOSModal()" style="display:none"><i class="fas fa-plus"></i> Nova OS</button></div>
       </div>
-
       <div class="search-bar">
-        <div class="search-input-wrap">
-          <i class="fas fa-magnifying-glass"></i>
-          <input class="search-input" id="os-search" placeholder="Buscar por número, unidade ou descrição..." oninput="renderOrdensPage()">
-        </div>
-        <select class="filter-btn" id="os-filter-status" onchange="renderOrdensPage()" style="cursor:pointer">
-          <option value="">Todos os Status</option>
-          <option>Aberta</option>
-          <option>Em Andamento</option>
-          <option>Aguardando Material</option>
-          <option>Concluída</option>
-          <option>Cancelada</option>
-        </select>
-        <select class="filter-btn" id="os-filter-prior" onchange="renderOrdensPage()" style="cursor:pointer">
-          <option value="">Todas as Prioridades</option>
-          <option>Alta</option>
-          <option>Média</option>
-          <option>Baixa</option>
-        </select>
+        <div class="search-input-wrap"><i class="fas fa-magnifying-glass"></i><input class="search-input" id="os-search" placeholder="Buscar por número, unidade ou descrição..." oninput="renderOrdensPage()"></div>
+        <select class="filter-btn" id="os-filter-status" onchange="renderOrdensPage()" style="cursor:pointer"><option value="">Todos os Status</option><option>Aberta</option><option>Em Andamento</option><option>Aguardando Material</option><option>Concluída</option><option>Cancelada</option></select>
+        <select class="filter-btn" id="os-filter-prior" onchange="renderOrdensPage()" style="cursor:pointer"><option value="">Todas as Prioridades</option><option>Alta</option><option>Média</option><option>Baixa</option></select>
       </div>
-
       <div class="os-full-list" id="os-full-list"></div>
     </div>
 
-    <!-- ══ CALENDÁRIO ══ -->
+    <!-- CALENDÁRIO -->
     <div class="page" id="page-calendario">
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">Calendário de OSs</h1>
-          <p class="page-subtitle">Programação e prazos das ordens de serviço</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn" onclick="calToday()"><i class="fas fa-calendar-day"></i> Ir para Hoje</button>
-        </div>
-      </div>
+      <div class="page-header"><div><h1 class="page-title">Calendário de OSs</h1><p class="page-subtitle">Prazos das ordens de serviço</p></div><div class="page-actions"><button class="btn" onclick="calToday()"><i class="fas fa-calendar-day"></i> Hoje</button></div></div>
       <div class="calendar-wrap">
-        <div class="card">
-          <div class="card-body">
-            <div class="cal-header">
-              <span class="cal-month" id="cal-month-label"></span>
-              <div class="cal-nav">
-                <button class="cal-nav-btn" onclick="calPrev()"><i class="fas fa-chevron-left"></i></button>
-                <button class="cal-nav-btn" onclick="calNext()"><i class="fas fa-chevron-right"></i></button>
-              </div>
-            </div>
-            <div class="cal-grid" id="cal-grid"></div>
-          </div>
-        </div>
-        <div>
-          <div class="cal-sidebar-card">
-            <div class="cal-sidebar-title" id="cal-selected-label">Selecione uma data</div>
-            <div id="cal-day-list"><div class="empty-state"><i class="fas fa-calendar-day"></i><h3>Nenhuma data selecionada</h3><p>Clique em uma data para ver as OSs</p></div></div>
-            <div class="cal-legend">
-              <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red)"></div> Alta Prioridade</div>
-              <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--orange)"></div> Média Prioridade</div>
-              <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green)"></div> Baixa Prioridade</div>
-            </div>
-          </div>
-        </div>
+        <div class="card"><div class="card-body"><div class="cal-header"><span class="cal-month" id="cal-month-label"></span><div class="cal-nav"><button class="cal-nav-btn" onclick="calPrev()"><i class="fas fa-chevron-left"></i></button><button class="cal-nav-btn" onclick="calNext()"><i class="fas fa-chevron-right"></i></button></div></div><div class="cal-grid" id="cal-grid"></div></div></div>
+        <div><div class="cal-sidebar-card"><div class="cal-sidebar-title" id="cal-selected-label">Selecione uma data</div><div id="cal-day-list"><div class="empty-state"><i class="fas fa-calendar-day"></i><h3>Nenhuma data selecionada</h3><p>Clique em uma data</p></div></div><div class="cal-legend"><div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red)"></div>Alta Prioridade</div><div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--orange)"></div>Média Prioridade</div><div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green)"></div>Baixa Prioridade</div></div></div></div>
       </div>
     </div>
 
-    <!-- ══ UNIDADES ══ -->
+    <!-- UNIDADES (só gestor) -->
     <div class="page" id="page-unidades">
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">Unidades de Saúde</h1>
-          <p class="page-subtitle">Gerencie as unidades de saúde do município</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn btn-accent" onclick="openUnitModal()"><i class="fas fa-plus"></i> Nova Unidade</button>
-        </div>
-      </div>
-      <div class="unidades-stats">
-        <div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-building-columns"></i></div><div class="stat-value" id="uni-total">–</div><div class="stat-label">Total de Unidades</div></div>
-        <div class="stat-card green"><div class="stat-icon green"><i class="fas fa-circle-check"></i></div><div class="stat-value" id="uni-ativas">–</div><div class="stat-label">Unidades Ativas</div></div>
-        <div class="stat-card purple"><div class="stat-icon purple"><i class="fas fa-house-medical"></i></div><div class="stat-value" id="uni-ubs">–</div><div class="stat-label">UBS</div></div>
-      </div>
-      <div class="search-bar">
-        <div class="search-input-wrap">
-          <i class="fas fa-magnifying-glass"></i>
-          <input class="search-input" id="uni-search" placeholder="Buscar por nome, endereço ou bairro..." oninput="renderUnidades()">
-        </div>
-      </div>
+      <div class="page-header"><div><h1 class="page-title">Unidades de Saúde</h1><p class="page-subtitle">Gerencie as unidades do município</p></div><div class="page-actions"><button class="btn btn-accent" onclick="openUnitModal()"><i class="fas fa-plus"></i> Nova Unidade</button></div></div>
+      <div class="unidades-stats"><div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-building-columns"></i></div><div class="stat-value" id="uni-total">–</div><div class="stat-label">Total</div></div><div class="stat-card green"><div class="stat-icon green"><i class="fas fa-circle-check"></i></div><div class="stat-value" id="uni-ativas">–</div><div class="stat-label">Ativas</div></div><div class="stat-card purple"><div class="stat-icon purple"><i class="fas fa-house-medical"></i></div><div class="stat-value" id="uni-ubs">–</div><div class="stat-label">UBS</div></div></div>
+      <div class="search-bar"><div class="search-input-wrap"><i class="fas fa-magnifying-glass"></i><input class="search-input" id="uni-search" placeholder="Buscar..." oninput="renderUnidades()"></div></div>
       <div class="unidades-grid" id="unidades-grid"></div>
     </div>
 
-    <!-- ══ MATERIAIS ══ -->
+    <!-- MATERIAIS -->
     <div class="page" id="page-materiais">
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">Materiais</h1>
-          <p class="page-subtitle">Controle de estoque e materiais de manutenção</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn" onclick="document.getElementById('csvFileInput').click()"><i class="fas fa-file-csv"></i> Importar CSV</button>
-          <input type="file" id="csvFileInput" class="file-input" accept=".csv" onchange="importCSV(event)">
-          <button class="btn btn-accent" onclick="openMatModal()"><i class="fas fa-plus"></i> Novo Material</button>
-        </div>
-      </div>
-      <div class="mat-stats">
-        <div class="stat-card purple"><div class="stat-icon purple"><i class="fas fa-boxes-stacked"></i></div><div class="stat-value" id="mat-total">–</div><div class="stat-label">Total de Materiais</div></div>
-        <div class="stat-card red"><div class="stat-icon red"><i class="fas fa-triangle-exclamation"></i></div><div class="stat-value" id="mat-baixo">–</div><div class="stat-label">Estoque Baixo</div></div>
-        <div class="stat-card green"><div class="stat-icon green"><i class="fas fa-dollar-sign"></i></div><div class="stat-value" id="mat-valor">–</div><div class="stat-label">Valor em Estoque</div></div>
-      </div>
-      <div class="search-bar">
-        <div class="search-input-wrap">
-          <i class="fas fa-magnifying-glass"></i>
-          <input class="search-input" id="mat-search" placeholder="Buscar materiais..." oninput="renderMateriais()">
-        </div>
-        <select class="filter-btn" id="mat-filter-cat" onchange="renderMateriais()" style="cursor:pointer">
-          <option value="">Todas as Categorias</option>
-          <option>Elétrico</option><option>Hidráulico</option><option>Pintura</option>
-          <option>Alvenaria</option><option>Carpintaria</option><option>HVAC</option><option>Outros</option>
-        </select>
-      </div>
-      <div class="mat-table-wrap">
-        <table class="mat-table">
-          <thead>
-            <tr>
-              <th>Material</th><th>Categoria</th><th>Estoque</th>
-              <th>Unidade</th><th>Custo Unit.</th><th>Fornecedor</th>
-              <th>Status</th><th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="mat-tbody"></tbody>
-        </table>
-      </div>
+      <div class="page-header"><div><h1 class="page-title">Materiais</h1><p class="page-subtitle">Controle de estoque</p></div><div class="page-actions so-gestor" style="display:none"><button class="btn btn-accent" onclick="openMatModal()"><i class="fas fa-plus"></i> Novo Material</button></div></div>
+      <div class="mat-stats"><div class="stat-card purple"><div class="stat-icon purple"><i class="fas fa-boxes-stacked"></i></div><div class="stat-value" id="mat-total">–</div><div class="stat-label">Total</div></div><div class="stat-card red"><div class="stat-icon red"><i class="fas fa-triangle-exclamation"></i></div><div class="stat-value" id="mat-baixo">–</div><div class="stat-label">Estoque Baixo</div></div><div class="stat-card green"><div class="stat-icon green"><i class="fas fa-dollar-sign"></i></div><div class="stat-value" id="mat-valor">–</div><div class="stat-label">Valor em Estoque</div></div></div>
+      <div class="search-bar"><div class="search-input-wrap"><i class="fas fa-magnifying-glass"></i><input class="search-input" id="mat-search" placeholder="Buscar materiais..." oninput="renderMateriais()"></div><select class="filter-btn" id="mat-filter-cat" onchange="renderMateriais()" style="cursor:pointer"><option value="">Todas as Categorias</option><option>Elétrico</option><option>Hidráulico</option><option>Pintura</option><option>Alvenaria</option><option>Carpintaria</option><option>HVAC</option><option>Outros</option></select></div>
+      <div class="mat-table-wrap"><table class="mat-table"><thead><tr><th>Material</th><th>Categoria</th><th>Estoque</th><th>Unidade</th><th>Custo Unit.</th><th>Fornecedor</th><th>Status</th><th class="so-gestor" style="display:none">Ações</th></tr></thead><tbody id="mat-tbody"></tbody></table></div>
     </div>
 
-    <!-- ══ TÉCNICOS ══ -->
+    <!-- TÉCNICOS (só gestor) -->
     <div class="page" id="page-tecnicos">
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">Técnicos</h1>
-          <p class="page-subtitle">Equipe de manutenção do município</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn btn-accent" onclick="openTecModal()"><i class="fas fa-plus"></i> Novo Técnico</button>
-        </div>
-      </div>
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
-        <div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-users"></i></div><div class="stat-value" id="tec-total">–</div><div class="stat-label">Total de Técnicos</div></div>
-        <div class="stat-card green"><div class="stat-icon green"><i class="fas fa-user-check"></i></div><div class="stat-value" id="tec-ativos">–</div><div class="stat-label">Ativos</div></div>
-        <div class="stat-card orange"><div class="stat-icon orange"><i class="fas fa-clipboard-check"></i></div><div class="stat-value" id="tec-os-abertas">–</div><div class="stat-label">OSs em Andamento</div></div>
-      </div>
+      <div class="page-header"><div><h1 class="page-title">Técnicos</h1><p class="page-subtitle">Equipe de manutenção</p></div><div class="page-actions"><button class="btn btn-accent" onclick="openTecModal()"><i class="fas fa-plus"></i> Novo Técnico</button></div></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px"><div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-users"></i></div><div class="stat-value" id="tec-total">–</div><div class="stat-label">Total</div></div><div class="stat-card green"><div class="stat-icon green"><i class="fas fa-user-check"></i></div><div class="stat-value" id="tec-ativos">–</div><div class="stat-label">Ativos</div></div><div class="stat-card orange"><div class="stat-icon orange"><i class="fas fa-clipboard-check"></i></div><div class="stat-value" id="tec-os-abertas">–</div><div class="stat-label">Em Andamento</div></div></div>
       <div class="tec-grid" id="tec-grid"></div>
     </div>
 
-    <!-- ══ RELATÓRIOS ══ -->
+    <!-- RELATÓRIOS (só gestor) -->
     <div class="page" id="page-relatorios">
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">Relatórios</h1>
-          <p class="page-subtitle">Análise gerencial do sistema de manutenção</p>
+      <div class="page-header"><div><h1 class="page-title">Relatórios</h1><p class="page-subtitle">Análise gerencial</p></div><div class="page-actions"><button class="btn" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button></div></div>
+      <div class="stats-grid" style="margin-bottom:24px"><div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-file-lines"></i></div><div class="stat-value" id="rel-total-os">–</div><div class="stat-label">Total de OSs</div></div><div class="stat-card green"><div class="stat-icon green"><i class="fas fa-percent"></i></div><div class="stat-value" id="rel-taxa">–</div><div class="stat-label">Taxa de Conclusão</div></div><div class="stat-card red"><div class="stat-icon red"><i class="fas fa-hourglass-half"></i></div><div class="stat-value" id="rel-atrasadas">–</div><div class="stat-label">Atrasadas</div></div><div class="stat-card orange"><div class="stat-icon orange"><i class="fas fa-boxes-stacked"></i></div><div class="stat-value" id="rel-mat-custo">–</div><div class="stat-label">Custo Estoque</div></div></div>
+      <div class="rel-grid"><div class="chart-card"><div class="chart-card-title">OSs por Status</div><div class="chart-canvas-wrap"><canvas id="chartStatus"></canvas></div></div><div class="chart-card"><div class="chart-card-title">OSs por Tipo de Serviço</div><div class="chart-canvas-wrap"><canvas id="chartTipo"></canvas></div></div><div class="chart-card"><div class="chart-card-title">Evolução Mensal</div><div class="chart-canvas-wrap"><canvas id="chartMensal"></canvas></div></div><div class="chart-card"><div class="chart-card-title">OSs por Unidade</div><div class="chart-canvas-wrap"><canvas id="chartUnidade"></canvas></div></div></div>
+    </div>
+
+    <!-- USUÁRIOS (só gestor) -->
+    <div class="page" id="page-usuarios">
+      <div class="page-header"><div><h1 class="page-title">Usuários</h1><p class="page-subtitle">Acesso das unidades ao sistema</p></div><div class="page-actions"><button class="btn btn-accent" onclick="openUserModal()"><i class="fas fa-plus"></i> Novo Usuário</button></div></div>
+      <div class="user-table-wrap"><table class="user-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Unidade Vinculada</th><th>Status</th><th>Ações</th></tr></thead><tbody id="user-tbody"></tbody></table></div>
+    </div>
+
+    <!-- MEU PERFIL -->
+    <div class="page" id="page-meu-perfil">
+      <div class="page-header"><div><h1 class="page-title">Meu Perfil</h1><p class="page-subtitle">Suas informações de acesso</p></div></div>
+      <div style="max-width:480px">
+        <div class="card" style="padding:28px">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+            <div id="perfil-avatar-big" style="width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0"></div>
+            <div><div style="font-size:20px;font-weight:800" id="perfil-nome-big">–</div><div id="perfil-chip-big" style="margin-top:4px"></div></div>
+          </div>
+          <div class="detail-field"><div class="detail-label">E-mail</div><div class="detail-value" id="perfil-email-big">–</div></div>
+          <div class="detail-field" id="perfil-vinculo-row"><div class="detail-label">Unidade</div><div class="detail-value" id="perfil-vinculo">–</div></div>
+          <div class="form-divider"></div>
+          <div class="form-group"><label class="form-label">Nova Senha</label><input type="password" class="form-input" id="nova-senha" placeholder="Mínimo 6 caracteres"></div>
+          <button class="btn btn-accent" onclick="alterarSenha()" style="margin-top:8px"><i class="fas fa-key"></i> Alterar Senha</button>
         </div>
-        <div class="page-actions">
-          <button class="btn" onclick="printReport()"><i class="fas fa-print"></i> Imprimir Relatório</button>
-        </div>
-      </div>
-      <div class="stats-grid" style="margin-bottom:24px">
-        <div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-file-lines"></i></div><div class="stat-value" id="rel-total-os">–</div><div class="stat-label">Total de OSs</div></div>
-        <div class="stat-card green"><div class="stat-icon green"><i class="fas fa-percent"></i></div><div class="stat-value" id="rel-taxa">–</div><div class="stat-label">Taxa de Conclusão</div></div>
-        <div class="stat-card red"><div class="stat-icon red"><i class="fas fa-hourglass-half"></i></div><div class="stat-value" id="rel-atrasadas">–</div><div class="stat-label">OSs Atrasadas</div></div>
-        <div class="stat-card orange"><div class="stat-icon orange"><i class="fas fa-boxes-stacked"></i></div><div class="stat-value" id="rel-mat-custo">–</div><div class="stat-label">Custo Estoque</div></div>
-      </div>
-      <div class="rel-grid">
-        <div class="chart-card"><div class="chart-card-title">OSs por Status</div><div class="chart-canvas-wrap"><canvas id="chartStatus"></canvas></div></div>
-        <div class="chart-card"><div class="chart-card-title">OSs por Tipo de Serviço</div><div class="chart-canvas-wrap"><canvas id="chartTipo"></canvas></div></div>
-        <div class="chart-card"><div class="chart-card-title">Evolução Mensal (últimos 6 meses)</div><div class="chart-canvas-wrap"><canvas id="chartMensal"></canvas></div></div>
-        <div class="chart-card"><div class="chart-card-title">OSs por Unidade</div><div class="chart-canvas-wrap"><canvas id="chartUnidade"></canvas></div></div>
       </div>
     </div>
 
   </div><!-- /content -->
 </main>
+</div><!-- /app -->
 
-<!-- ═══ MODAL: NOVA/EDITAR OS ═══ -->
+<!-- MODAL OS -->
 <div class="modal-overlay" id="modal-os">
   <div class="modal wide">
-    <div class="modal-head">
-      <span class="modal-head-title" id="modal-os-title">Nova Ordem de Serviço</span>
-      <button class="modal-close" onclick="closeModal('modal-os')"><i class="fas fa-xmark"></i></button>
-    </div>
+    <div class="modal-head"><span class="modal-head-title" id="modal-os-title">Nova Ordem de Serviço</span><button class="modal-close" onclick="closeModal('modal-os')"><i class="fas fa-xmark"></i></button></div>
     <div class="modal-body">
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Número da OS</label>
-          <input class="form-input" id="os-num" readonly style="opacity:.6">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Data de Abertura</label>
-          <input type="date" class="form-input" id="os-data">
-        </div>
+        <div class="form-group"><label class="form-label">Número da OS</label><input class="form-input" id="os-num" readonly style="opacity:.6"></div>
+        <div class="form-group"><label class="form-label">Data de Abertura</label><input type="date" class="form-input" id="os-data"></div>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="os-unidade-group">
         <label class="form-label">Unidade de Saúde</label>
         <select class="form-select" id="os-unidade"></select>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Tipo de Serviço</label>
-          <select class="form-select" id="os-tipo">
-            <option value="">Selecione...</option>
-            <option>Limpeza</option><option>Elétrica</option><option>Hidráulica</option>
-            <option>Pintura</option><option>Carpintaria</option><option>Ar Condicionado</option>
-            <option>Alvenaria</option><option>Manutenção Geral</option><option>Outros</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Prioridade</label>
-          <select class="form-select" id="os-prioridade">
-            <option>Baixa</option><option selected>Média</option><option>Alta</option>
-          </select>
-        </div>
+        <div class="form-group"><label class="form-label">Tipo de Serviço</label><select class="form-select" id="os-tipo"><option value="">Selecione...</option><option>Limpeza</option><option>Elétrica</option><option>Hidráulica</option><option>Pintura</option><option>Carpintaria</option><option>Ar Condicionado</option><option>Alvenaria</option><option>Manutenção Geral</option><option>Outros</option></select></div>
+        <div class="form-group"><label class="form-label">Prioridade</label><select class="form-select" id="os-prioridade"><option>Baixa</option><option selected>Média</option><option>Alta</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Prazo</label>
-          <input type="date" class="form-input" id="os-prazo">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Status</label>
-          <select class="form-select" id="os-status">
-            <option selected>Aberta</option>
-            <option>Em Andamento</option>
-            <option>Aguardando Material</option>
-            <option>Concluída</option>
-            <option>Cancelada</option>
-          </select>
+        <div class="form-group"><label class="form-label">Prazo</label><input type="date" class="form-input" id="os-prazo"></div>
+        <div class="form-group" id="os-status-group"><label class="form-label">Status</label><select class="form-select" id="os-status"><option selected>Aberta</option><option>Em Andamento</option><option>Aguardando Material</option><option>Concluída</option><option>Cancelada</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Descrição do Problema</label><textarea class="form-textarea" id="os-desc" placeholder="Descreva detalhadamente o problema..."></textarea></div>
+      <!-- Campos extras só para gestor -->
+      <div id="os-gestor-extra" style="display:none">
+        <div class="form-divider"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Responsável / Solicitante</label><input class="form-input" id="os-responsavel" placeholder="Nome do responsável"></div>
+          <div class="form-group"><label class="form-label">Técnico Designado</label><select class="form-select" id="os-tecnico"><option value="">Nenhum designado</option></select></div>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Descrição do Problema</label>
-        <textarea class="form-textarea" id="os-desc" placeholder="Descreva detalhadamente o problema e o serviço necessário..."></textarea>
-      </div>
-      <div class="form-divider"></div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Responsável / Solicitante</label>
-          <input class="form-input" id="os-responsavel" placeholder="Nome do responsável">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Técnico(s) Designado(s)</label>
-          <select class="form-select" id="os-tecnico">
-            <option value="">Nenhum designado</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Observações</label>
-        <textarea class="form-textarea" id="os-obs" placeholder="Observações adicionais..." style="min-height:60px"></textarea>
-      </div>
+      <div class="form-group" style="margin-top:4px"><label class="form-label">Observações</label><textarea class="form-textarea" id="os-obs" placeholder="Observações adicionais..." style="min-height:60px"></textarea></div>
     </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal('modal-os')">Cancelar</button>
-      <button class="btn btn-accent" onclick="saveOS()"><i class="fas fa-floppy-disk"></i> Salvar OS</button>
-    </div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('modal-os')">Cancelar</button><button class="btn btn-accent" onclick="saveOS()"><i class="fas fa-floppy-disk"></i> Salvar OS</button></div>
   </div>
 </div>
 
-<!-- ═══ MODAL: DETALHE OS ═══ -->
+<!-- MODAL DETALHE OS -->
 <div class="modal-overlay" id="modal-os-detail">
   <div class="modal wide">
-    <div class="modal-head">
-      <span class="modal-head-title" id="detail-num">OS #–</span>
-      <button class="modal-close" onclick="closeModal('modal-os-detail')"><i class="fas fa-xmark"></i></button>
-    </div>
+    <div class="modal-head"><span class="modal-head-title" id="detail-num">OS #–</span><button class="modal-close" onclick="closeModal('modal-os-detail')"><i class="fas fa-xmark"></i></button></div>
     <div class="modal-body" id="modal-os-detail-body"></div>
     <div class="modal-foot">
       <button class="btn" onclick="closeModal('modal-os-detail')">Fechar</button>
-      <button class="btn" onclick="printOS()" ><i class="fas fa-print"></i> Imprimir</button>
-      <button class="btn btn-accent" id="detail-edit-btn"><i class="fas fa-pen"></i> Editar</button>
+      <button class="btn" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+      <button class="btn btn-accent" id="detail-edit-btn" style="display:none"><i class="fas fa-pen"></i> Editar</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ MODAL: UNIDADE ═══ -->
+<!-- MODAL UNIDADE -->
 <div class="modal-overlay" id="modal-unit">
-  <div class="modal">
-    <div class="modal-head">
-      <span class="modal-head-title" id="modal-unit-title">Nova Unidade de Saúde</span>
-      <button class="modal-close" onclick="closeModal('modal-unit')"><i class="fas fa-xmark"></i></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Nome da Unidade</label>
-          <input class="form-input" id="unit-nome" placeholder="Ex: UBS Jardim Santista">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Tipo</label>
-          <select class="form-select" id="unit-tipo">
-            <option>UBS</option><option>UPA</option><option>Hospital</option><option>CME</option><option>Outro</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Endereço</label>
-        <input class="form-input" id="unit-end" placeholder="Rua, número">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Bairro</label>
-          <input class="form-input" id="unit-bairro" placeholder="Bairro">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Telefone</label>
-          <input class="form-input" id="unit-tel" placeholder="(11) 4798-0000">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Diretor / Responsável</label>
-          <input class="form-input" id="unit-resp" placeholder="Nome e cargo">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Status</label>
-          <select class="form-select" id="unit-status">
-            <option value="true">Ativa</option><option value="false">Inativa</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal('modal-unit')">Cancelar</button>
-      <button class="btn btn-accent" onclick="saveUnit()"><i class="fas fa-floppy-disk"></i> Salvar</button>
-    </div>
+  <div class="modal"><div class="modal-head"><span class="modal-head-title" id="modal-unit-title">Nova Unidade</span><button class="modal-close" onclick="closeModal('modal-unit')"><i class="fas fa-xmark"></i></button></div>
+  <div class="modal-body">
+    <div class="form-row"><div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="unit-nome" placeholder="Ex: UBS Jardim Santista"></div><div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="unit-tipo"><option>UBS</option><option>UPA</option><option>Hospital</option><option>CME</option><option>Outro</option></select></div></div>
+    <div class="form-group"><label class="form-label">Endereço</label><input class="form-input" id="unit-end" placeholder="Rua, número"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Bairro</label><input class="form-input" id="unit-bairro"></div><div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="unit-tel" placeholder="(11) 4798-0000"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Diretor / Responsável</label><input class="form-input" id="unit-resp"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="unit-status"><option value="true">Ativa</option><option value="false">Inativa</option></select></div></div>
   </div>
+  <div class="modal-foot"><button class="btn" onclick="closeModal('modal-unit')">Cancelar</button><button class="btn btn-accent" onclick="saveUnit()"><i class="fas fa-floppy-disk"></i> Salvar</button></div></div>
 </div>
 
-<!-- ═══ MODAL: MATERIAL ═══ -->
+<!-- MODAL MATERIAL -->
 <div class="modal-overlay" id="modal-mat">
-  <div class="modal">
-    <div class="modal-head">
-      <span class="modal-head-title" id="modal-mat-title">Novo Material</span>
-      <button class="modal-close" onclick="closeModal('modal-mat')"><i class="fas fa-xmark"></i></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Nome do Material</label>
-          <input class="form-input" id="mat-nome" placeholder="Ex: Cabo 6mm">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Categoria</label>
-          <select class="form-select" id="mat-cat">
-            <option>Elétrico</option><option>Hidráulico</option><option>Pintura</option>
-            <option>Alvenaria</option><option>Carpintaria</option><option>HVAC</option><option>Outros</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Estoque Atual</label>
-          <input type="number" class="form-input" id="mat-qtd" placeholder="0" min="0">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Estoque Mínimo</label>
-          <input type="number" class="form-input" id="mat-min" placeholder="0" min="0">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Unidade de Medida</label>
-          <input class="form-input" id="mat-un" placeholder="metro, unidade, saco...">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Custo Unitário (R$)</label>
-          <input type="number" class="form-input" id="mat-custo" placeholder="0.00" min="0" step="0.01">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Fornecedor</label>
-        <input class="form-input" id="mat-forn" placeholder="Nome do fornecedor">
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal('modal-mat')">Cancelar</button>
-      <button class="btn btn-accent" onclick="saveMat()"><i class="fas fa-floppy-disk"></i> Salvar</button>
-    </div>
+  <div class="modal"><div class="modal-head"><span class="modal-head-title" id="modal-mat-title">Novo Material</span><button class="modal-close" onclick="closeModal('modal-mat')"><i class="fas fa-xmark"></i></button></div>
+  <div class="modal-body">
+    <div class="form-row"><div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="mat-nome"></div><div class="form-group"><label class="form-label">Categoria</label><select class="form-select" id="mat-cat"><option>Elétrico</option><option>Hidráulico</option><option>Pintura</option><option>Alvenaria</option><option>Carpintaria</option><option>HVAC</option><option>Outros</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Estoque Atual</label><input type="number" class="form-input" id="mat-qtd" min="0"></div><div class="form-group"><label class="form-label">Estoque Mínimo</label><input type="number" class="form-input" id="mat-min" min="0"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Unidade de Medida</label><input class="form-input" id="mat-un" placeholder="metro, unidade, saco..."></div><div class="form-group"><label class="form-label">Custo Unitário (R$)</label><input type="number" class="form-input" id="mat-custo" min="0" step="0.01"></div></div>
+    <div class="form-group"><label class="form-label">Fornecedor</label><input class="form-input" id="mat-forn"></div>
   </div>
+  <div class="modal-foot"><button class="btn" onclick="closeModal('modal-mat')">Cancelar</button><button class="btn btn-accent" onclick="saveMat()"><i class="fas fa-floppy-disk"></i> Salvar</button></div></div>
 </div>
 
-<!-- ═══ MODAL: TÉCNICO ═══ -->
+<!-- MODAL TÉCNICO -->
 <div class="modal-overlay" id="modal-tec">
-  <div class="modal">
-    <div class="modal-head">
-      <span class="modal-head-title" id="modal-tec-title">Novo Técnico</span>
-      <button class="modal-close" onclick="closeModal('modal-tec')"><i class="fas fa-xmark"></i></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Nome Completo</label>
-          <input class="form-input" id="tec-nome" placeholder="Nome do técnico">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Especialidade</label>
-          <select class="form-select" id="tec-esp">
-            <option>Elétrica</option><option>Hidráulica</option><option>Pintura</option>
-            <option>Ar Condicionado</option><option>Carpintaria</option><option>Alvenaria</option>
-            <option>Limpeza</option><option>Manutenção Geral</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Telefone</label>
-          <input class="form-input" id="tec-tel" placeholder="(11) 99999-0000">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Registro / Matrícula</label>
-          <input class="form-input" id="tec-reg" placeholder="Nº de registro">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">E-mail</label>
-          <input type="email" class="form-input" id="tec-email" placeholder="email@prefeitura.sp.gov.br">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Status</label>
-          <select class="form-select" id="tec-status">
-            <option value="true">Ativo</option><option value="false">Inativo</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal('modal-tec')">Cancelar</button>
-      <button class="btn btn-accent" onclick="saveTec()"><i class="fas fa-floppy-disk"></i> Salvar</button>
-    </div>
+  <div class="modal"><div class="modal-head"><span class="modal-head-title" id="modal-tec-title">Novo Técnico</span><button class="modal-close" onclick="closeModal('modal-tec')"><i class="fas fa-xmark"></i></button></div>
+  <div class="modal-body">
+    <div class="form-row"><div class="form-group"><label class="form-label">Nome Completo</label><input class="form-input" id="tec-nome"></div><div class="form-group"><label class="form-label">Especialidade</label><select class="form-select" id="tec-esp"><option>Elétrica</option><option>Hidráulica</option><option>Pintura</option><option>Ar Condicionado</option><option>Carpintaria</option><option>Alvenaria</option><option>Limpeza</option><option>Manutenção Geral</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="tec-tel"></div><div class="form-group"><label class="form-label">Registro / Matrícula</label><input class="form-input" id="tec-reg"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">E-mail</label><input type="email" class="form-input" id="tec-email"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="tec-status"><option value="true">Ativo</option><option value="false">Inativo</option></select></div></div>
   </div>
+  <div class="modal-foot"><button class="btn" onclick="closeModal('modal-tec')">Cancelar</button><button class="btn btn-accent" onclick="saveTec()"><i class="fas fa-floppy-disk"></i> Salvar</button></div></div>
 </div>
 
-<!-- ═══ CONFIRM ═══ -->
+<!-- MODAL USUÁRIO -->
+<div class="modal-overlay" id="modal-user">
+  <div class="modal"><div class="modal-head"><span class="modal-head-title">Novo Usuário (Unidade)</span><button class="modal-close" onclick="closeModal('modal-user')"><i class="fas fa-xmark"></i></button></div>
+  <div class="modal-body">
+    <div style="background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.2);border-radius:8px;padding:12px;margin-bottom:20px;font-size:13px;color:var(--text2)"><i class="fas fa-circle-info" style="color:var(--accent);margin-right:6px"></i>Crie aqui o acesso para cada <strong>unidade de saúde</strong>. O usuário poderá abrir OS e acompanhar somente as da sua unidade.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Nome / Identificação</label><input class="form-input" id="user-nome" placeholder="Ex: UBS Jardim Santista"></div>
+      <div class="form-group"><label class="form-label">Unidade Vinculada</label><select class="form-select" id="user-unidade"></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">E-mail de Acesso</label><input type="email" class="form-input" id="user-email" placeholder="ubs.jardim@pmc.sp.gov.br"></div>
+      <div class="form-group"><label class="form-label">Senha Inicial</label><input type="text" class="form-input" id="user-senha" placeholder="Mínimo 6 caracteres"></div>
+    </div>
+  </div>
+  <div class="modal-foot"><button class="btn" onclick="closeModal('modal-user')">Cancelar</button><button class="btn btn-accent" onclick="saveUser()"><i class="fas fa-user-plus"></i> Criar Acesso</button></div></div>
+</div>
+
+<!-- CONFIRM -->
 <div class="confirm-overlay" id="confirm-dialog">
-  <div class="confirm-box">
-    <div class="confirm-icon"><i class="fas fa-trash-can"></i></div>
-    <div class="confirm-title" id="confirm-title">Confirmar exclusão</div>
-    <div class="confirm-msg" id="confirm-msg">Esta ação não pode ser desfeita.</div>
-    <div class="confirm-btns">
-      <button class="btn" onclick="closeConfirm()">Cancelar</button>
-      <button class="btn btn-red" id="confirm-ok-btn">Confirmar</button>
-    </div>
-  </div>
+  <div class="confirm-box"><div class="confirm-icon"><i class="fas fa-trash-can"></i></div><div class="confirm-title">Confirmar exclusão</div><div class="confirm-msg" id="confirm-msg">Esta ação não pode ser desfeita.</div><div class="confirm-btns"><button class="btn" onclick="closeConfirm()">Cancelar</button><button class="btn btn-red" id="confirm-ok-btn">Confirmar</button></div></div>
 </div>
 
-<!-- Toasts -->
 <div class="toast-container" id="toast-container"></div>
-
-<!-- ═══ SCRIPT ═══ -->
 <script>
-// ════════════════════════════════════════════════════════════
-// SUPABASE CONFIG
-// ════════════════════════════════════════════════════════════
-const SUPA_URL  = 'https://whrvsexngphgucpnibus.supabase.co';
-const SUPA_KEY  = 'sb_publishable_HMw5Zod77Ym_PC1fbowfPA_7By4N_mS';
-const HEADERS   = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` };
+// ════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════
+const SUPA_URL = 'https://whrvsexngphgucpnibus.supabase.co';
+const SUPA_KEY = 'sb_publishable_HMw5Zod77Ym_PC1fbowfPA_7By4N_mS';
 
-// ── Supabase REST helpers ────────────────────────────────────
-async function sbSelect(table, params = '') {
-  const r = await fetch(`${SUPA_URL}/rest/v1/${table}?${params}`, { headers: HEADERS });
-  if (!r.ok) throw new Error(`SELECT ${table}: ${r.status} ${await r.text()}`);
-  return r.json();
+// ── helpers REST ─────────────────────────────────────────
+function authHdr(extra={}) {
+  return { 'Content-Type':'application/json', apikey:SUPA_KEY,
+    Authorization:`Bearer ${session?.access_token||SUPA_KEY}`, ...extra };
 }
-async function sbInsert(table, body) {
-  const r = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
-    method: 'POST', headers: { ...HEADERS, 'Prefer': 'return=representation' },
-    body: JSON.stringify(body)
-  });
-  if (!r.ok) throw new Error(`INSERT ${table}: ${r.status} ${await r.text()}`);
-  return r.json();
+async function sbQ(path, opts={}) {
+  const r = await fetch(SUPA_URL+path, { headers: authHdr(opts.headers||{}), ...opts });
+  if (!r.ok) throw new Error(await r.text());
+  return r.status===204 ? null : r.json();
 }
-async function sbUpdate(table, id, body) {
-  const r = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
-    method: 'PATCH', headers: { ...HEADERS, 'Prefer': 'return=representation' },
-    body: JSON.stringify(body)
-  });
-  if (!r.ok) throw new Error(`UPDATE ${table}: ${r.status} ${await r.text()}`);
-  return r.json();
-}
-async function sbDelete(table, id) {
-  const r = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
-    method: 'DELETE', headers: HEADERS
-  });
-  if (!r.ok) throw new Error(`DELETE ${table}: ${r.status} ${await r.text()}`);
-  return true;
-}
+const sbGet    = (t,q='') => sbQ(`/rest/v1/${t}?${q}`);
+const sbPost   = (t,b)    => sbQ(`/rest/v1/${t}`,{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify(b)});
+const sbPatch  = (t,id,b) => sbQ(`/rest/v1/${t}?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=representation'},body:JSON.stringify(b)});
+const sbDelete = (t,id)   => sbQ(`/rest/v1/${t}?id=eq.${id}`,{method:'DELETE'});
 
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 // STATE
-// ════════════════════════════════════════════════════════════
-let db = { ordens: [], unidades: [], materiais: [], tecnicos: [] };
-let editingId   = null;
-let editingType = null;
-let calDate     = new Date();
+// ════════════════════════════════════════════════════════
+let session  = null;   // Supabase session
+let perfil   = null;   // { id, nome, email, perfil:'gestor'|'unidade', unidade_id }
+let db       = { ordens:[], unidades:[], materiais:[], tecnicos:[], usuarios:[] };
+let editingId = null;
+let calDate   = new Date();
 let calSelectedDate = null;
-let chartPriorityInst = null, chartStatusInst = null;
-let chartTipoInst = null, chartMensalInst = null, chartUnidadeInst = null;
+let chartPI=null, chartSI=null, chartTI=null, chartMI=null, chartUI=null;
 
-const AVATAR_COLORS = ['#4f8ef7','#22d3a0','#f76b6b','#a78bfa','#f5a742','#06b6d4','#ec4899','#84cc16'];
-function getAvatarColor(str) {
-  let h = 0;
-  for (let c of (str||'')) h = (h*31 + c.charCodeAt(0)) % AVATAR_COLORS.length;
-  return AVATAR_COLORS[h];
-}
-function initials(name) {
-  return (name||'?').split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');
-}
+const AVATARCOLS = ['#4f8ef7','#22d3a0','#f76b6b','#a78bfa','#f5a742','#06b6d4','#ec4899','#84cc16'];
+function aColor(s){ let h=0; for(let c of(s||'')) h=(h*31+c.charCodeAt(0))%AVATARCOLS.length; return AVATARCOLS[h]; }
+function ini(n){ return(n||'?').split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join(''); }
+const isGestor = () => perfil?.perfil === 'gestor';
 
-// ════════════════════════════════════════════════════════════
-// LOADING OVERLAY
-// ════════════════════════════════════════════════════════════
-function showLoading(msg = 'Carregando...') {
-  let el = document.getElementById('global-loading');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'global-loading';
-    el.style.cssText = `position:fixed;inset:0;background:rgba(15,17,23,.85);backdrop-filter:blur(6px);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px`;
-    el.innerHTML = `<div style="width:44px;height:44px;border:3px solid rgba(79,142,247,.2);border-top-color:#4f8ef7;border-radius:50%;animation:spin .7s linear infinite"></div><span style="color:#8892a4;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px" id="loading-msg">${msg}</span>`;
-    if (!document.querySelector('#spin-style')) {
-      const s = document.createElement('style');
-      s.id = 'spin-style';
-      s.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
-      document.head.appendChild(s);
-    }
+// ════════════════════════════════════════════════════════
+// LOADING
+// ════════════════════════════════════════════════════════
+function showLoading(msg='Carregando...'){
+  let el=document.getElementById('gl');
+  if(!el){
+    el=document.createElement('div'); el.id='gl';
+    el.style.cssText='position:fixed;inset:0;background:rgba(15,17,23,.85);backdrop-filter:blur(6px);z-index:99998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px';
+    el.innerHTML=`<div style="width:44px;height:44px;border:3px solid rgba(79,142,247,.2);border-top-color:#4f8ef7;border-radius:50%;animation:spin .7s linear infinite"></div><span id="gl-msg" style="color:#8892a4;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px">${msg}</span>`;
+    if(!document.querySelector('#sty')){ const s=document.createElement('style'); s.id='sty'; s.textContent='@keyframes spin{to{transform:rotate(360deg)}}'; document.head.appendChild(s); }
     document.body.appendChild(el);
-  } else {
-    document.getElementById('loading-msg').textContent = msg;
-    el.style.display = 'flex';
-  }
+  } else { document.getElementById('gl-msg').textContent=msg; el.style.display='flex'; }
 }
-function hideLoading() {
-  const el = document.getElementById('global-loading');
-  if (el) el.style.display = 'none';
-}
+function hideLoading(){ document.getElementById('gl')?.style && (document.getElementById('gl').style.display='none'); }
 
-// ════════════════════════════════════════════════════════════
-// INIT — carrega tudo do Supabase
-// ════════════════════════════════════════════════════════════
-async function initDB() {
-  showLoading('Conectando ao banco de dados...');
+// ════════════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════════════
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const senha=document.getElementById('login-senha').value;
+  const errEl=document.getElementById('login-error');
+  errEl.style.display='none';
+  if(!email||!senha){ errEl.textContent='Preencha e-mail e senha.'; errEl.style.display='block'; return; }
+  const btn=document.getElementById('login-btn');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Entrando...';
   try {
-    const [ordens, unidades, materiais, tecnicos] = await Promise.all([
-      sbSelect('ordens_servico', 'order=created_at.desc'),
-      sbSelect('unidades',       'order=nome.asc'),
-      sbSelect('materiais',      'order=nome.asc'),
-      sbSelect('tecnicos',       'order=nome.asc'),
-    ]);
-    db.ordens    = ordens    || [];
-    db.unidades  = unidades  || [];
-    db.materiais = materiais || [];
-    db.tecnicos  = tecnicos  || [];
-    hideLoading();
-    renderDashboard();
-  } catch(e) {
-    hideLoading();
-    console.error(e);
-    showDBError(e.message);
-  }
+    const res = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`,{
+      method:'POST', headers:{apikey:SUPA_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:senha})
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error_description||data.error);
+    session = data;
+    localStorage.setItem('mts', JSON.stringify(data));
+    await loadPerfil();
+    bootApp();
+  } catch(e){
+    errEl.textContent = e.message.includes('Invalid login')||e.message.includes('invalid_grant')
+      ? 'E-mail ou senha incorretos.' : e.message;
+    errEl.style.display='block';
+  } finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-right-to-bracket"></i> Entrar'; }
 }
 
-function showDBError(msg) {
-  document.body.innerHTML = `
-    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f1117;font-family:'Plus Jakarta Sans',sans-serif">
-      <div style="text-align:center;padding:40px;max-width:480px">
-        <div style="font-size:56px;margin-bottom:20px">⚠️</div>
-        <h2 style="color:#e8eaf0;font-size:22px;margin-bottom:12px">Erro ao conectar ao banco</h2>
-        <p style="color:#8892a4;font-size:14px;margin-bottom:8px">Verifique se as tabelas foram criadas no Supabase e se as credenciais estão corretas.</p>
-        <p style="color:#5a6478;font-size:12px;margin-bottom:24px;font-family:monospace">${msg}</p>
-        <button onclick="location.reload()" style="padding:10px 24px;background:#4f8ef7;border:none;border-radius:8px;color:#fff;font-size:14px;cursor:pointer;font-family:inherit">Tentar novamente</button>
-      </div>
-    </div>`;
+async function loadPerfil(){
+  const rows = await sbGet('perfis',`id=eq.${session.user.id}`);
+  perfil = rows?.[0] || { id:session.user.id, nome:session.user.email, email:session.user.email, perfil:'unidade', unidade_id:null };
 }
 
-// ════════════════════════════════════════════════════════════
-// HELPERS
-// ════════════════════════════════════════════════════════════
-function fmtDate(s) {
-  if (!s) return '–';
-  const [y,m,d] = s.split('T')[0].split('-');
-  return `${d}/${m}/${y}`;
-}
-function toDateInput(s) { return s ? s.split('T')[0] : ''; }
-function isLate(os) {
-  return os.prazo && new Date(os.prazo) < new Date() &&
-         os.status !== 'Concluída' && os.status !== 'Cancelada';
-}
-function getPriorClass(p='') { return p.toLowerCase().replace(' ',''); }
-function getStatusClass(s) {
-  const m = {'Aberta':'aberta','Em Andamento':'andamento','Aguardando Material':'aguardando','Concluída':'concluida','Cancelada':'cancelada'};
-  return m[s]||'aberta';
-}
-function getUnitIcon(t) { return {UBS:'🏥',UPA:'🚑',Hospital:'🏨',CME:'🔬',Outro:'🏢'}[t]||'🏢'; }
-function getUnitClass(t) { return (t||'outro').toLowerCase(); }
-function fmtCurrency(v) {
-  return 'R$ ' + Number(v||0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-function generateOSNum() {
-  const y = new Date().getFullYear();
-  const nums = db.ordens
-    .map(o=>o.numero||'')
-    .filter(n=>n.includes(`#${y}-`))
-    .map(n=>{ const m=n.match(/(\d+)$/); return m?parseInt(m[1]):0; });
-  return `OS #${y}-${String(Math.max(0,...nums)+1).padStart(3,'0')}`;
+async function doLogout(){
+  try { await fetch(`${SUPA_URL}/auth/v1/logout`,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:`Bearer ${session?.access_token}`}}); } catch(e){}
+  session=null; perfil=null;
+  localStorage.removeItem('mts');
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-senha').value='';
+  closeProfileMenu();
 }
 
-// ════════════════════════════════════════════════════════════
-// NAVIGATION
-// ════════════════════════════════════════════════════════════
-const PAGE_LABELS = {
-  dashboard:'Dashboard', ordens:'Ordens de Serviço', calendario:'Calendário',
-  unidades:'Unidades de Saúde', materiais:'Materiais', tecnicos:'Técnicos', relatorios:'Relatórios'
-};
+function togglePwd(){
+  const i=document.getElementById('login-senha'),b=document.getElementById('pwd-eye');
+  if(i.type==='password'){i.type='text';b.innerHTML='<i class="fas fa-eye-slash"></i>';}
+  else{i.type='password';b.innerHTML='<i class="fas fa-eye"></i>';}
+}
 
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b => {
-    b.classList.remove('active');
-    if (b.getAttribute('onclick')?.includes(`'${id}'`)) b.classList.add('active');
+// ════════════════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════════════════
+function bootApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  applyPerfilUI();
+  loadAll();
+}
+
+function applyPerfilUI(){
+  const p=perfil?.perfil||'unidade', cor=aColor(perfil?.nome||''), in_=ini(perfil?.nome||'');
+  const chips={gestor:'perfil-gestor',unidade:'perfil-unidade'};
+  const labels={gestor:'Gestor',unidade:'Unidade de Saúde'};
+
+  // Topbar e sidebar
+  ['topbar-avatar','sidebar-avatar'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.textContent=in_; el.style.background=`linear-gradient(135deg,${cor},${cor}99)`;
   });
-  document.getElementById('page-'+id).classList.add('active');
-  document.getElementById('page-label').textContent = PAGE_LABELS[id]||id;
-  closeSidebar();
-  const renders = { dashboard:renderDashboard, ordens:renderOrdensPage, calendario:renderCalendar,
-    unidades:renderUnidades, materiais:renderMateriais, tecnicos:renderTecnicos, relatorios:renderRelatorios };
-  renders[id]?.();
+  document.getElementById('topbar-nome').textContent=perfil?.nome||'–';
+  document.getElementById('topbar-role').textContent=labels[p]||p;
+  document.getElementById('sidebar-nome').textContent=perfil?.nome||'–';
+  document.getElementById('sidebar-role').textContent=labels[p]||p;
+  document.getElementById('dd-nome').textContent=perfil?.nome||'–';
+  document.getElementById('dd-email').textContent=perfil?.email||'–';
+  document.getElementById('dd-chip').innerHTML=`<span class="perfil-chip ${chips[p]||''}">${labels[p]||p}</span>`;
+
+  // Visibilidade: elementos só para gestor
+  const g=isGestor();
+  document.querySelectorAll('.so-gestor').forEach(el=>el.style.display=g?'':'none');
+
+  // Nova OS: ambos podem criar
+  document.getElementById('btn-nova-os').style.display='';
+  document.getElementById('ordens-nova-btn').style.display='';
+
+  // Se unidade, não mostra campo de status na criação
+  document.getElementById('os-status-group').style.display=g?'':'none';
+  document.getElementById('os-gestor-extra').style.display=g?'':'none';
 }
 
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
+// ════════════════════════════════════════════════════════
+// LOAD DATA
+// ════════════════════════════════════════════════════════
+async function loadAll(){
+  showLoading('Carregando dados...');
+  try {
+    const [ordens,unidades,materiais,tecnicos] = await Promise.all([
+      sbGet('ordens_servico','order=created_at.desc'),
+      sbGet('unidades','order=nome.asc'),
+      sbGet('materiais','order=nome.asc'),
+      sbGet('tecnicos','order=nome.asc'),
+    ]);
+    db.ordens=ordens||[]; db.unidades=unidades||[];
+    db.materiais=materiais||[]; db.tecnicos=tecnicos||[];
+    if(isGestor()){ const us=await sbGet('perfis','order=nome.asc'); db.usuarios=us||[]; }
+  } catch(e){ toast('Erro ao carregar: '+e.message,'error'); }
+  hideLoading();
+  renderDashboard();
 }
 
-async function reloadAndRender(page) {
+async function reload(page){
   showLoading('Sincronizando...');
   try {
-    const [ordens, unidades, materiais, tecnicos] = await Promise.all([
-      sbSelect('ordens_servico', 'order=created_at.desc'),
-      sbSelect('unidades',       'order=nome.asc'),
-      sbSelect('materiais',      'order=nome.asc'),
-      sbSelect('tecnicos',       'order=nome.asc'),
+    const [ordens,unidades,materiais,tecnicos] = await Promise.all([
+      sbGet('ordens_servico','order=created_at.desc'),
+      sbGet('unidades','order=nome.asc'),
+      sbGet('materiais','order=nome.asc'),
+      sbGet('tecnicos','order=nome.asc'),
     ]);
-    db.ordens    = ordens    || [];
-    db.unidades  = unidades  || [];
-    db.materiais = materiais || [];
-    db.tecnicos  = tecnicos  || [];
-  } catch(e) { toast('Erro ao sincronizar: '+e.message,'error'); }
+    db.ordens=ordens||[]; db.unidades=unidades||[];
+    db.materiais=materiais||[]; db.tecnicos=tecnicos||[];
+    if(isGestor()){ const us=await sbGet('perfis','order=nome.asc'); db.usuarios=us||[]; }
+  } catch(e){ toast('Erro: '+e.message,'error'); }
   hideLoading();
-  const renders = { dashboard:renderDashboard, ordens:renderOrdensPage, unidades:renderUnidades,
-    materiais:renderMateriais, tecnicos:renderTecnicos, relatorios:renderRelatorios };
-  renders[page]?.();
+  ({dashboard:renderDashboard,ordens:renderOrdensPage,unidades:renderUnidades,
+    materiais:renderMateriais,tecnicos:renderTecnicos,relatorios:renderRelatorios,
+    usuarios:renderUsuarios})[page]?.();
 }
 
-// ════════════════════════════════════════════════════════════
-// DASHBOARD
-// ════════════════════════════════════════════════════════════
-function renderDashboard() {
-  const today = new Date();
-  const months = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-  document.getElementById('dash-date-label').textContent =
-    `${today.getDate()} de ${months[today.getMonth()]} de ${today.getFullYear()}`;
+// ════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════
+const PAGE_LABELS={dashboard:'Dashboard',ordens:'Ordens de Serviço',calendario:'Calendário',
+  unidades:'Unidades de Saúde',materiais:'Materiais',tecnicos:'Técnicos',
+  relatorios:'Relatórios',usuarios:'Usuários','meu-perfil':'Meu Perfil'};
 
-  const abertas    = db.ordens.filter(o=>['Aberta','Em Andamento','Aguardando Material'].includes(o.status)).length;
-  const alta       = db.ordens.filter(o=>o.prioridade==='Alta' && !['Concluída','Cancelada'].includes(o.status)).length;
-  const conc       = db.ordens.filter(o=>o.status==='Concluída').length;
-  const atrasadas  = db.ordens.filter(o=>isLate(o)).length;
-  const uniAtivas  = db.unidades.filter(u=>u.ativa).length;
-  const matBaixo   = db.materiais.filter(m=>m.qtd<m.min).length;
-
-  document.getElementById('st-abertas').textContent    = abertas;
-  document.getElementById('st-alta').textContent       = alta;
-  document.getElementById('st-concluidas').textContent = conc;
-  document.getElementById('st-unidades').textContent   = uniAtivas;
-  document.getElementById('st-abertas-sub').textContent = `${db.ordens.length} total`;
-  const subAlta = document.getElementById('st-alta-sub');
-  subAlta.textContent  = atrasadas > 0 ? `${atrasadas} atrasada${atrasadas>1?'s':''}` : 'Nenhuma atrasada';
-  subAlta.className    = atrasadas > 0 ? 'alert' : 'good';
-  document.getElementById('st-conc-sub').textContent   = 'Este mês';
-  document.getElementById('st-uni-sub').textContent    = `${db.unidades.length} total`;
-
-  const alertEl = document.getElementById('dash-alert');
-  if (matBaixo > 0) {
-    alertEl.style.display = 'flex';
-    document.getElementById('dash-alert-text').textContent =
-      `${matBaixo} material${matBaixo>1?'is precisam':'precisa'} de reposição`;
-  } else { alertEl.style.display = 'none'; }
-
-  document.getElementById('nav-badge-os').textContent     = abertas;
-  document.getElementById('nav-badge-os').style.display   = abertas > 0 ? '' : 'none';
-  document.getElementById('nav-badge-mat').style.display  = matBaixo > 0 ? '' : 'none';
-
-  // Recent OS list
-  const list   = document.getElementById('dash-os-list');
-  const recent = db.ordens.slice(0, 6);
-  if (!recent.length) {
-    list.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard"></i><h3>Nenhuma OS</h3><p>Clique em "Nova OS" para começar</p></div>`;
-  } else {
-    list.innerHTML = recent.map(os => {
-      const pc   = getPriorClass(os.prioridade);
-      const late = isLate(os);
-      return `<div class="os-item" onclick="viewOSDetail('${os.id}')">
-        <div class="os-indicator ${late?'alta':os.status==='Concluída'?'concluida':pc}">
-          <i class="fas fa-${os.prioridade==='Alta'?'bolt':os.prioridade==='Média'?'cube':'check'}"></i>
-        </div>
-        <div class="os-body">
-          <div class="os-row1">
-            <span class="os-num">${os.numero}</span>
-            <span class="badge badge-${pc}">${os.prioridade}</span>
-            <span class="badge badge-${getStatusClass(os.status)}">${os.status}</span>
-          </div>
-          <div class="os-unit"><i class="fas fa-location-dot"></i>${os.unidade_nome||os.unidade||'–'}</div>
-          <div class="os-desc">${os.descricao||''}</div>
-          <div class="os-footer">
-            <span class="os-date"><i class="fas fa-calendar"></i>${fmtDate(os.data_abertura)}</span>
-            <span class="os-date ${late?'late':''}"><i class="fas fa-clock"></i>Prazo: ${fmtDate(os.prazo)}${late?' · ATRASADA':''}</span>
-            <span class="badge" style="background:var(--bg3);color:var(--text3)">${os.tipo||''}</span>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-  renderPriorityChart();
-  renderTopServices();
-}
-
-function renderPriorityChart() {
-  const alta  = db.ordens.filter(o=>o.prioridade==='Alta'  && !['Concluída','Cancelada'].includes(o.status)).length;
-  const media = db.ordens.filter(o=>o.prioridade==='Média' && !['Concluída','Cancelada'].includes(o.status)).length;
-  const baixa = db.ordens.filter(o=>o.prioridade==='Baixa' && !['Concluída','Cancelada'].includes(o.status)).length;
-  const ctx   = document.getElementById('chartPriority').getContext('2d');
-  if (chartPriorityInst) { chartPriorityInst.destroy(); chartPriorityInst = null; }
-  chartPriorityInst = new Chart(ctx, {
-    type: 'doughnut',
-    data: { labels:['Alta','Média','Baixa'], datasets:[{ data:[alta,media,baixa], backgroundColor:['#f76b6b','#f5a742','#22d3a0'], borderWidth:0, hoverOffset:4 }] },
-    options: { responsive:true, maintainAspectRatio:false, cutout:'72%', plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label(c){ const t=c.dataset.data.reduce((a,b)=>a+b,0); return ` ${c.label}: ${c.parsed} (${t?Math.round(c.parsed/t*100):0}%)`; } } } } }
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>{
+    b.classList.remove('active');
+    if(b.getAttribute('onclick')?.includes(`'${id}'`)) b.classList.add('active');
   });
-  const total = alta+media+baixa;
-  document.getElementById('chart-legend').innerHTML = [['Alta','#f76b6b',alta],['Média','#f5a742',media],['Baixa','#22d3a0',baixa]]
-    .map(([l,c,v])=>`<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:50%;background:${c}"></div>${l} <strong style="color:var(--text)">${v}</strong></div>`).join('');
+  document.getElementById('page-'+id)?.classList.add('active');
+  document.getElementById('page-label').textContent=PAGE_LABELS[id]||id;
+  closeSidebar();
+  ({dashboard:renderDashboard,ordens:renderOrdensPage,calendario:renderCalendar,
+    unidades:renderUnidades,materiais:renderMateriais,tecnicos:renderTecnicos,
+    relatorios:renderRelatorios,usuarios:renderUsuarios,'meu-perfil':renderMeuPerfil})[id]?.();
+}
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('open'); }
+function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
+function toggleProfileMenu(){ document.getElementById('profile-dropdown').classList.toggle('open'); }
+function closeProfileMenu(){ document.getElementById('profile-dropdown').classList.remove('open'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('#profile-badge')&&!e.target.closest('#profile-dropdown')) closeProfileMenu(); });
+
+// ════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════
+function fmtDate(s){ if(!s) return '–'; const[y,m,d]=s.split('T')[0].split('-'); return`${d}/${m}/${y}`; }
+function toDate(s){ return s?s.split('T')[0]:''; }
+function isLate(os){ return os.prazo&&new Date(os.prazo)<new Date()&&!['Concluída','Cancelada'].includes(os.status); }
+function pClass(p=''){ return p.toLowerCase().replace(' ',''); }
+function sClass(s){ return({'Aberta':'aberta','Em Andamento':'andamento','Aguardando Material':'aguardando','Concluída':'concluida','Cancelada':'cancelada'})[s]||'aberta'; }
+function uIcon(t){ return{UBS:'🏥',UPA:'🚑',Hospital:'🏨',CME:'🔬',Outro:'🏢'}[t]||'🏢'; }
+function fmtR(v){ return'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function genNum(){ const y=new Date().getFullYear(); const nums=db.ordens.map(o=>o.numero||'').filter(n=>n.includes(`#${y}-`)).map(n=>{const m=n.match(/(\d+)$/);return m?parseInt(m[1]):0;}); return`OS #${y}-${String(Math.max(0,...nums,0)+1).padStart(3,'0')}`; }
+
+// Filtra ordens por perfil
+function myOrdens(){
+  if(isGestor()) return db.ordens;
+  return db.ordens.filter(o=>String(o.unidade_id)===String(perfil?.unidade_id));
 }
 
-function renderTopServices() {
-  const tipos = {};
-  db.ordens.forEach(o=>{ if(o.tipo) tipos[o.tipo]=(tipos[o.tipo]||0)+1; });
-  const sorted = Object.entries(tipos).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  const max    = Math.max(...sorted.map(s=>s[1]),1);
-  const colors = ['var(--accent)','var(--purple)','var(--green)','var(--orange)','var(--red)','#06b6d4'];
-  document.getElementById('top-services').innerHTML = sorted.map(([tipo,cnt],i)=>`
-    <div style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
-        <span style="font-weight:600;color:var(--text)">${tipo}</span>
-        <span style="color:var(--text3);font-weight:700">${cnt}</span>
+// ════════════════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════════════════
+function renderDashboard(){
+  const months=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const td=new Date();
+  document.getElementById('dash-date-label').textContent=`${td.getDate()} de ${months[td.getMonth()]} de ${td.getFullYear()}`;
+  const ords=myOrdens();
+  const abertas=ords.filter(o=>['Aberta','Em Andamento','Aguardando Material'].includes(o.status)).length;
+  const alta=ords.filter(o=>o.prioridade==='Alta'&&!['Concluída','Cancelada'].includes(o.status)).length;
+  const conc=ords.filter(o=>o.status==='Concluída').length;
+  const atrasadas=ords.filter(o=>isLate(o)).length;
+  const matBaixo=db.materiais.filter(m=>m.qtd<m.min).length;
+  document.getElementById('st-abertas').textContent=abertas;
+  document.getElementById('st-alta').textContent=alta;
+  document.getElementById('st-concluidas').textContent=conc;
+  document.getElementById('st-unidades').textContent=db.unidades.filter(u=>u.ativa).length;
+  document.getElementById('st-abertas-sub').textContent=`${ords.length} total`;
+  const sub=document.getElementById('st-alta-sub');
+  sub.textContent=atrasadas>0?`${atrasadas} atrasada${atrasadas>1?'s':''}` :'Nenhuma atrasada';
+  sub.className=atrasadas>0?'alert':'good';
+  document.getElementById('st-conc-sub').textContent='Este mês';
+  document.getElementById('st-uni-sub').textContent=`${db.unidades.length} total`;
+  const alertEl=document.getElementById('dash-alert');
+  if(matBaixo>0&&isGestor()){ alertEl.style.display='flex'; document.getElementById('dash-alert-text').textContent=`${matBaixo} material${matBaixo>1?'is precisam':'precisa'} de reposição`; }
+  else alertEl.style.display='none';
+  document.getElementById('nav-badge-os').textContent=abertas;
+  document.getElementById('nav-badge-os').style.display=abertas>0?'':'none';
+  document.getElementById('nav-badge-mat').style.display=matBaixo>0&&isGestor()?'':'none';
+
+  const list=document.getElementById('dash-os-list');
+  const recent=ords.slice(0,6);
+  if(!recent.length){ list.innerHTML=`<div class="empty-state"><i class="fas fa-clipboard"></i><h3>Nenhuma OS ainda</h3><p>Clique em "Nova OS" para começar</p></div>`; }
+  else list.innerHTML=recent.map(os=>{
+    const pc=pClass(os.prioridade),late=isLate(os);
+    return`<div class="os-item" onclick="viewOS('${os.id}')">
+      <div class="os-indicator ${late?'alta':os.status==='Concluída'?'concluida':pc}">
+        <i class="fas fa-${os.prioridade==='Alta'?'bolt':os.prioridade==='Média'?'cube':'check'}"></i>
       </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${cnt/max*100}%;background:${colors[i]}"></div></div>
-    </div>`).join('');
+      <div class="os-body">
+        <div class="os-row1"><span class="os-num">${os.numero}</span><span class="badge badge-${pc}">${os.prioridade}</span><span class="badge badge-${sClass(os.status)}">${os.status}</span></div>
+        <div class="os-unit"><i class="fas fa-location-dot"></i>${os.unidade_nome||'–'}</div>
+        <div class="os-desc">${os.descricao||''}</div>
+        <div class="os-footer"><span class="os-date"><i class="fas fa-calendar"></i>${fmtDate(os.data_abertura)}</span><span class="os-date ${late?'late':''}"><i class="fas fa-clock"></i>Prazo: ${fmtDate(os.prazo)}${late?' · ATRASADA':''}</span><span class="badge" style="background:var(--bg3);color:var(--text3)">${os.tipo||''}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+  renderPriorChart(ords); renderTopSvcs(ords);
 }
 
-// ════════════════════════════════════════════════════════════
-// ORDENS PAGE
-// ════════════════════════════════════════════════════════════
-function renderOrdensPage() {
-  const search      = (document.getElementById('os-search').value||'').toLowerCase();
-  const filterStatus = document.getElementById('os-filter-status').value;
-  const filterPrior  = document.getElementById('os-filter-prior').value;
-  let list = db.ordens.filter(o=>
-    (!search || (o.numero||'').toLowerCase().includes(search) ||
-      (o.unidade_nome||o.unidade||'').toLowerCase().includes(search) ||
-      (o.descricao||'').toLowerCase().includes(search) ||
-      (o.tipo||'').toLowerCase().includes(search)) &&
-    (!filterStatus || o.status===filterStatus) &&
-    (!filterPrior  || o.prioridade===filterPrior)
-  );
-  const container = document.getElementById('os-full-list');
-  if (!list.length) {
-    container.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard"></i><h3>Nenhuma OS encontrada</h3><p>Ajuste os filtros ou crie uma nova OS</p></div>`;
-    return;
-  }
-  container.innerHTML = list.map(os => {
-    const pc   = getPriorClass(os.prioridade);
-    const late = isLate(os);
-    const nome = os.unidade_nome || os.unidade || '–';
-    return `<div class="os-card">
+function renderPriorChart(ords){
+  const a=ords.filter(o=>o.prioridade==='Alta'&&!['Concluída','Cancelada'].includes(o.status)).length;
+  const m=ords.filter(o=>o.prioridade==='Média'&&!['Concluída','Cancelada'].includes(o.status)).length;
+  const b=ords.filter(o=>o.prioridade==='Baixa'&&!['Concluída','Cancelada'].includes(o.status)).length;
+  if(chartPI){chartPI.destroy();chartPI=null;}
+  chartPI=new Chart(document.getElementById('chartPriority').getContext('2d'),{type:'doughnut',data:{labels:['Alta','Média','Baixa'],datasets:[{data:[a,m,b],backgroundColor:['#f76b6b','#f5a742','#22d3a0'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false},tooltip:{callbacks:{label(c){const t=c.dataset.data.reduce((s,v)=>s+v,0);return ` ${c.label}: ${c.parsed} (${t?Math.round(c.parsed/t*100):0}%)`;}}}}}}); 
+  document.getElementById('chart-legend').innerHTML=[['Alta','#f76b6b',a],['Média','#f5a742',m],['Baixa','#22d3a0',b]].map(([l,c,v])=>`<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:50%;background:${c}"></div>${l}<strong style="color:var(--text);margin-left:4px">${v}</strong></div>`).join('');
+}
+function renderTopSvcs(ords){
+  const t={};ords.forEach(o=>{if(o.tipo)t[o.tipo]=(t[o.tipo]||0)+1;});
+  const s=Object.entries(t).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const max=Math.max(...s.map(x=>x[1]),1);
+  const cols=['var(--accent)','var(--purple)','var(--green)','var(--orange)','var(--red)','#06b6d4'];
+  document.getElementById('top-services').innerHTML=s.map(([tipo,cnt],i)=>`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="font-weight:600;color:var(--text)">${tipo}</span><span style="color:var(--text3);font-weight:700">${cnt}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${cnt/max*100}%;background:${cols[i]}"></div></div></div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// ORDENS
+// ════════════════════════════════════════════════════════
+function renderOrdensPage(){
+  const s=(document.getElementById('os-search').value||'').toLowerCase();
+  const fs=document.getElementById('os-filter-status').value;
+  const fp=document.getElementById('os-filter-prior').value;
+  const list=myOrdens().filter(o=>
+    (!s||(o.numero||'').toLowerCase().includes(s)||(o.unidade_nome||'').toLowerCase().includes(s)||(o.descricao||'').toLowerCase().includes(s)||(o.tipo||'').toLowerCase().includes(s))&&
+    (!fs||o.status===fs)&&(!fp||o.prioridade===fp));
+  // Subtítulo contextual
+  if(!isGestor()){ const u=db.unidades.find(x=>String(x.id)===String(perfil?.unidade_id)); document.getElementById('ordens-subtitle').textContent=u?`Ordens da ${u.nome}`:'Suas ordens de serviço'; }
+  const el=document.getElementById('os-full-list');
+  if(!list.length){el.innerHTML=`<div class="empty-state"><i class="fas fa-clipboard"></i><h3>Nenhuma OS encontrada</h3><p>Ajuste os filtros ou abra uma nova OS</p></div>`;return;}
+  el.innerHTML=list.map(os=>{
+    const pc=pClass(os.prioridade),late=isLate(os);
+    return`<div class="os-card">
       <div class="os-card-top">
-        <div class="os-indicator ${late?'alta':pc}" style="margin-top:0;width:48px;height:48px;flex-shrink:0">
-          <i class="fas fa-${os.prioridade==='Alta'?'bolt':os.prioridade==='Média'?'cube':'check'}"></i>
-        </div>
+        <div class="os-indicator ${late?'alta':pc}" style="width:48px;height:48px;flex-shrink:0;margin-top:0"><i class="fas fa-${os.prioridade==='Alta'?'bolt':os.prioridade==='Média'?'cube':'check'}"></i></div>
         <div class="os-card-body">
-          <div class="os-card-header">
-            <span class="os-card-num">${os.numero}</span>
-            <span class="badge badge-${pc}">${os.prioridade}</span>
-            <span class="badge badge-${getStatusClass(os.status)}">${os.status}</span>
-            <span class="badge" style="background:var(--bg3);color:var(--text3)">${os.tipo||''}</span>
-            ${late?`<span class="badge badge-alta">ATRASADA</span>`:''}
-          </div>
-          <div class="os-unit"><i class="fas fa-location-dot"></i> <strong>${nome}</strong></div>
+          <div class="os-card-header"><span class="os-card-num">${os.numero}</span><span class="badge badge-${pc}">${os.prioridade}</span><span class="badge badge-${sClass(os.status)}">${os.status}</span><span class="badge" style="background:var(--bg3);color:var(--text3)">${os.tipo||''}</span>${late?`<span class="badge badge-alta">ATRASADA</span>`:''}</div>
+          <div class="os-unit"><i class="fas fa-location-dot"></i><strong>${os.unidade_nome||'–'}</strong></div>
           <div class="os-card-desc">${os.descricao||''}</div>
-          <div class="os-card-meta">
-            <span class="os-date"><i class="fas fa-calendar-plus"></i> Abertura: ${fmtDate(os.data_abertura)}</span>
-            <span class="os-date ${late?'late':''}"><i class="fas fa-calendar-xmark"></i> Prazo: ${fmtDate(os.prazo)}</span>
-            ${os.responsavel?`<span class="os-date"><i class="fas fa-user"></i> ${os.responsavel}</span>`:''}
-          </div>
-          ${os.tecnico?`<div class="team-chips"><span class="team-chip"><i class="fas fa-user-gear"></i> ${os.tecnico}</span></div>`:''}
+          <div class="os-card-meta"><span class="os-date"><i class="fas fa-calendar-plus"></i>Abertura: ${fmtDate(os.data_abertura)}</span><span class="os-date ${late?'late':''}"><i class="fas fa-calendar-xmark"></i>Prazo: ${fmtDate(os.prazo)}</span>${os.responsavel?`<span class="os-date"><i class="fas fa-user"></i>${os.responsavel}</span>`:''}</div>
+          ${os.tecnico?`<div class="team-chips"><span class="team-chip"><i class="fas fa-user-gear"></i>${os.tecnico}</span></div>`:''}
         </div>
       </div>
       <div class="os-card-actions">
-        <button class="action-btn primary" onclick="viewOSDetail('${os.id}')"><i class="fas fa-eye"></i> Ver Detalhes</button>
-        <button class="action-btn" onclick="editOS('${os.id}')"><i class="fas fa-pen"></i> Editar</button>
-        <button class="action-btn" onclick="printOSById('${os.id}')"><i class="fas fa-print"></i> Imprimir</button>
-        <button class="action-btn danger" onclick="confirmDelete('os','${os.id}')"><i class="fas fa-trash"></i> Excluir</button>
+        <button class="action-btn primary" onclick="viewOS('${os.id}')"><i class="fas fa-eye"></i>Ver Detalhes</button>
+        <button class="action-btn" onclick="editOS('${os.id}')"><i class="fas fa-pen"></i>Editar</button>
+        <button class="action-btn" onclick="printOSById('${os.id}')"><i class="fas fa-print"></i>Imprimir</button>
+        ${isGestor()?`<button class="action-btn danger" onclick="confirmDelete('os','${os.id}')"><i class="fas fa-trash"></i>Excluir</button>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 // OS CRUD
-// ════════════════════════════════════════════════════════════
-function openNewOSModal() {
-  editingId = null; editingType = 'os';
-  document.getElementById('modal-os-title').textContent = 'Nova Ordem de Serviço';
-  document.getElementById('os-num').value       = generateOSNum();
-  document.getElementById('os-data').value      = new Date().toISOString().split('T')[0];
-  document.getElementById('os-prioridade').value = 'Média';
-  document.getElementById('os-status').value    = 'Aberta';
-  document.getElementById('os-desc').value      = '';
-  document.getElementById('os-obs').value       = '';
-  document.getElementById('os-responsavel').value = '';
-  document.getElementById('os-tipo').value      = '';
-  document.getElementById('os-prazo').value     = '';
-
-  const sel = document.getElementById('os-unidade');
-  sel.innerHTML = '<option value="">Selecione...</option>' +
-    db.unidades.filter(u=>u.ativa).map(u=>`<option value="${u.id}">${u.nome}</option>`).join('');
-
-  const tecSel = document.getElementById('os-tecnico');
-  tecSel.innerHTML = '<option value="">Nenhum designado</option>' +
-    db.tecnicos.filter(t=>t.ativo).map(t=>`<option value="${t.nome}">${t.nome} · ${t.esp}</option>`).join('');
-
+// ════════════════════════════════════════════════════════
+function openNewOSModal(){
+  editingId=null;
+  document.getElementById('modal-os-title').textContent='Nova Ordem de Serviço';
+  document.getElementById('os-num').value=genNum();
+  document.getElementById('os-data').value=new Date().toISOString().split('T')[0];
+  document.getElementById('os-prioridade').value='Média';
+  document.getElementById('os-status').value='Aberta';
+  ['os-desc','os-obs','os-responsavel','os-prazo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('os-tipo').value='';
+  const sel=document.getElementById('os-unidade');
+  if(isGestor()){
+    sel.disabled=false;
+    sel.innerHTML='<option value="">Selecione...</option>'+db.unidades.filter(u=>u.ativa).map(u=>`<option value="${u.id}">${u.nome}</option>`).join('');
+    document.getElementById('os-gestor-extra').style.display='';
+    document.getElementById('os-status-group').style.display='';
+    document.getElementById('os-tecnico').innerHTML='<option value="">Nenhum designado</option>'+db.tecnicos.filter(t=>t.ativo).map(t=>`<option value="${t.nome}">${t.nome} (${t.esp})</option>`).join('');
+  } else {
+    sel.disabled=true;
+    const u=db.unidades.find(u=>String(u.id)===String(perfil?.unidade_id));
+    sel.innerHTML=u?`<option value="${u.id}">${u.nome}</option>`:'<option value="">Unidade não configurada</option>';
+    document.getElementById('os-gestor-extra').style.display='none';
+    document.getElementById('os-status-group').style.display='none';
+  }
   openModal('modal-os');
 }
 
-function editOS(id) {
-  const os = db.ordens.find(o=>String(o.id)===String(id));
-  if (!os) return;
-  editingId = id; editingType = 'os';
-  document.getElementById('modal-os-title').textContent = `Editar ${os.numero}`;
-  document.getElementById('os-num').value        = os.numero;
-  document.getElementById('os-data').value       = toDateInput(os.data_abertura);
-  document.getElementById('os-prazo').value      = toDateInput(os.prazo);
-  document.getElementById('os-desc').value       = os.descricao||'';
-  document.getElementById('os-obs').value        = os.obs||'';
-  document.getElementById('os-responsavel').value = os.responsavel||'';
-  document.getElementById('os-prioridade').value = os.prioridade;
-  document.getElementById('os-status').value     = os.status;
-  document.getElementById('os-tipo').value       = os.tipo||'';
-
-  const sel = document.getElementById('os-unidade');
-  sel.innerHTML = '<option value="">Selecione...</option>' +
-    db.unidades.map(u=>`<option value="${u.id}" ${String(u.id)===String(os.unidade_id)?'selected':''}>${u.nome}</option>`).join('');
-
-  const tecSel = document.getElementById('os-tecnico');
-  tecSel.innerHTML = '<option value="">Nenhum designado</option>' +
-    db.tecnicos.filter(t=>t.ativo).map(t=>`<option value="${t.nome}" ${t.nome===os.tecnico?'selected':''}>${t.nome} · ${t.esp}</option>`).join('');
-
+function editOS(id){
+  const os=db.ordens.find(o=>String(o.id)===String(id));
+  if(!os) return;
+  editingId=id;
+  document.getElementById('modal-os-title').textContent=`Editar ${os.numero}`;
+  document.getElementById('os-num').value=os.numero;
+  document.getElementById('os-data').value=toDate(os.data_abertura);
+  document.getElementById('os-prazo').value=toDate(os.prazo);
+  document.getElementById('os-desc').value=os.descricao||'';
+  document.getElementById('os-obs').value=os.obs||'';
+  document.getElementById('os-responsavel').value=os.responsavel||'';
+  document.getElementById('os-prioridade').value=os.prioridade;
+  document.getElementById('os-status').value=os.status;
+  document.getElementById('os-tipo').value=os.tipo||'';
+  const sel=document.getElementById('os-unidade');
+  if(isGestor()){
+    sel.disabled=false;
+    sel.innerHTML=db.unidades.map(u=>`<option value="${u.id}" ${String(u.id)===String(os.unidade_id)?'selected':''}>${u.nome}</option>`).join('');
+    document.getElementById('os-gestor-extra').style.display='';
+    document.getElementById('os-status-group').style.display='';
+    document.getElementById('os-tecnico').innerHTML='<option value="">Nenhum designado</option>'+db.tecnicos.filter(t=>t.ativo).map(t=>`<option value="${t.nome}" ${t.nome===os.tecnico?'selected':''}>${t.nome} (${t.esp})</option>`).join('');
+  } else {
+    // Unidade pode editar: desc, tipo, prazo, obs — mas não status/técnico
+    sel.disabled=true;
+    const u=db.unidades.find(u=>String(u.id)===String(os.unidade_id));
+    sel.innerHTML=u?`<option value="${u.id}">${u.nome}</option>`:'';
+    document.getElementById('os-gestor-extra').style.display='none';
+    document.getElementById('os-status-group').style.display='none';
+  }
   closeModal('modal-os-detail');
   openModal('modal-os');
 }
 
-async function saveOS() {
-  const unidadeId = document.getElementById('os-unidade').value;
-  const tipo      = document.getElementById('os-tipo').value;
-  const desc      = document.getElementById('os-desc').value.trim();
-  const prazo     = document.getElementById('os-prazo').value;
-
-  if (!unidadeId) { toast('Selecione uma unidade de saúde','warning'); return; }
-  if (!tipo)      { toast('Selecione o tipo de serviço','warning'); return; }
-  if (!desc)      { toast('Preencha a descrição do problema','warning'); return; }
-  if (!prazo)     { toast('Informe o prazo','warning'); return; }
-
-  const unidade = db.unidades.find(u=>String(u.id)===String(unidadeId));
-  const payload = {
-    unidade_id:   unidadeId,
-    unidade_nome: unidade?.nome || '',
-    tipo, descricao: desc, prazo,
-    prioridade:   document.getElementById('os-prioridade').value,
-    status:       document.getElementById('os-status').value,
-    data_abertura: document.getElementById('os-data').value,
-    responsavel:  document.getElementById('os-responsavel').value,
-    tecnico:      document.getElementById('os-tecnico').value,
-    obs:          document.getElementById('os-obs').value
-  };
-
-  showLoading('Salvando OS...');
-  try {
-    if (editingId) {
-      payload.numero = document.getElementById('os-num').value;
-      await sbUpdate('ordens_servico', editingId, payload);
-      toast('OS atualizada com sucesso!');
-    } else {
-      payload.numero = document.getElementById('os-num').value;
-      await sbInsert('ordens_servico', payload);
-      toast('Ordem de Serviço criada!');
-    }
-    closeModal('modal-os');
-    await reloadAndRender('ordens');
-  } catch(e) {
-    hideLoading();
-    toast('Erro ao salvar: '+e.message,'error');
+async function saveOS(){
+  const unidadeId=document.getElementById('os-unidade').value||String(perfil?.unidade_id||'');
+  const tipo=document.getElementById('os-tipo').value;
+  const desc=document.getElementById('os-desc').value.trim();
+  const prazo=document.getElementById('os-prazo').value;
+  if(!unidadeId){toast('Unidade não identificada','warning');return;}
+  if(!tipo){toast('Selecione o tipo de serviço','warning');return;}
+  if(!desc){toast('Preencha a descrição do problema','warning');return;}
+  if(!prazo){toast('Informe o prazo','warning');return;}
+  const unidade=db.unidades.find(u=>String(u.id)===String(unidadeId));
+  const payload={unidade_id:unidadeId, unidade_nome:unidade?.nome||'', tipo, descricao:desc, prazo,
+    prioridade:document.getElementById('os-prioridade').value,
+    data_abertura:document.getElementById('os-data').value,
+    obs:document.getElementById('os-obs').value};
+  if(isGestor()){
+    payload.status=document.getElementById('os-status').value;
+    payload.responsavel=document.getElementById('os-responsavel').value;
+    payload.tecnico=document.getElementById('os-tecnico').value;
+  } else {
+    if(!editingId) payload.status='Aberta';
+    payload.responsavel=perfil?.nome||'';
   }
-}
-
-async function deleteOS(id) {
-  showLoading('Excluindo...');
+  if(!editingId) payload.numero=document.getElementById('os-num').value;
+  showLoading('Salvando...');
   try {
-    await sbDelete('ordens_servico', id);
-    toast('OS excluída','info');
-    await reloadAndRender('ordens');
-  } catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+    if(editingId) await sbPatch('ordens_servico',editingId,payload);
+    else await sbPost('ordens_servico',payload);
+    toast(editingId?'OS atualizada!':'OS criada com sucesso!');
+    closeModal('modal-os'); await reload('ordens');
+  } catch(e){ hideLoading(); toast('Erro: '+e.message,'error'); }
 }
 
-function viewOSDetail(id) {
-  const os = db.ordens.find(o=>String(o.id)===String(id));
-  if (!os) return;
-  const late = isLate(os);
-  const pc   = getPriorClass(os.prioridade);
-  document.getElementById('detail-num').textContent = os.numero;
-  document.getElementById('detail-edit-btn').onclick = () => editOS(id);
-  document.getElementById('modal-os-detail-body').innerHTML = `
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+async function deleteOS(id){
+  showLoading('Excluindo...');
+  try{ await sbDelete('ordens_servico',id); toast('OS excluída','info'); await reload('ordens'); }
+  catch(e){ hideLoading(); toast('Erro: '+e.message,'error'); }
+}
+
+function viewOS(id){
+  const os=db.ordens.find(o=>String(o.id)===String(id));
+  if(!os) return;
+  const late=isLate(os), pc=pClass(os.prioridade);
+  document.getElementById('detail-num').textContent=os.numero;
+  document.getElementById('detail-edit-btn').style.display='';
+  document.getElementById('detail-edit-btn').onclick=()=>editOS(id);
+  const steps=['Aberta','Em Andamento','Aguardando Material','Concluída'];
+  const idx=steps.indexOf(os.status);
+  const timeline=`<div class="status-timeline">${steps.map((s,i)=>`<div class="status-step ${i<idx?'done':i===idx?'active':''}"><div class="status-dot"><i class="fas fa-${i<idx?'check':i===idx?'circle-dot':'circle'}" style="font-size:10px"></i></div><div class="status-step-label">${s}</div></div>`).join('')}</div>`;
+  document.getElementById('modal-os-detail-body').innerHTML=`
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
       <span class="badge badge-${pc}" style="font-size:13px;padding:5px 12px">${os.prioridade}</span>
-      <span class="badge badge-${getStatusClass(os.status)}" style="font-size:13px;padding:5px 12px">${os.status}</span>
+      <span class="badge badge-${sClass(os.status)}" style="font-size:13px;padding:5px 12px">${os.status}</span>
       <span class="badge" style="background:var(--bg3);color:var(--text3);font-size:13px;padding:5px 12px">${os.tipo||''}</span>
-      ${late?`<span class="badge badge-alta" style="font-size:13px;padding:5px 12px">ATRASADA</span>`:''}
+      ${late?`<span class="badge badge-alta" style="font-size:13px;padding:5px 12px"><i class="fas fa-clock"></i> ATRASADA</span>`:''}
     </div>
-    <div class="detail-grid">
+    ${timeline}
+    <div class="detail-grid" style="margin-top:20px">
       <div>
-        <div class="detail-field"><div class="detail-label">Unidade</div>
-          <div class="detail-value"><i class="fas fa-location-dot" style="color:var(--accent);margin-right:6px"></i>${os.unidade_nome||os.unidade||'–'}</div></div>
-        <div class="detail-field"><div class="detail-label">Descrição</div>
-          <div class="detail-value" style="line-height:1.7;color:var(--text2)">${os.descricao||'–'}</div></div>
+        <div class="detail-field"><div class="detail-label">Unidade</div><div class="detail-value"><i class="fas fa-location-dot" style="color:var(--accent);margin-right:6px"></i>${os.unidade_nome||'–'}</div></div>
+        <div class="detail-field"><div class="detail-label">Descrição</div><div class="detail-value" style="line-height:1.7;color:var(--text2)">${os.descricao||'–'}</div></div>
         ${os.obs?`<div class="detail-field"><div class="detail-label">Observações</div><div class="detail-value" style="color:var(--text2)">${os.obs}</div></div>`:''}
       </div>
       <div>
         <div class="detail-field"><div class="detail-label">Data de Abertura</div><div class="detail-value">${fmtDate(os.data_abertura)}</div></div>
-        <div class="detail-field"><div class="detail-label">Prazo</div>
-          <div class="detail-value"><span style="color:${late?'var(--red)':'var(--text)'}">${fmtDate(os.prazo)}${late?' · Atrasada':''}</span></div></div>
-        <div class="detail-field"><div class="detail-label">Responsável</div><div class="detail-value">${os.responsavel||'–'}</div></div>
+        <div class="detail-field"><div class="detail-label">Prazo</div><div class="detail-value"><span style="color:${late?'var(--red)':'var(--text)'}">${fmtDate(os.prazo)}${late?' · Atrasada':''}</span></div></div>
+        <div class="detail-field"><div class="detail-label">Responsável / Solicitante</div><div class="detail-value">${os.responsavel||'–'}</div></div>
         <div class="detail-field"><div class="detail-label">Técnico Designado</div><div class="detail-value">${os.tecnico||'–'}</div></div>
       </div>
     </div>`;
   openModal('modal-os-detail');
 }
+function printOSById(id){ viewOS(id); setTimeout(()=>window.print(),400); }
 
-function printOSById(id) { viewOSDetail(id); setTimeout(()=>window.print(),400); }
-function printOS()        { window.print(); }
-
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 // CALENDÁRIO
-// ════════════════════════════════════════════════════════════
-function renderCalendar() {
-  const months = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-  const y = calDate.getFullYear(), m = calDate.getMonth();
-  document.getElementById('cal-month-label').textContent = `${months[m]} de ${y}`;
-  const firstDay    = new Date(y,m,1).getDay();
-  const daysInMonth = new Date(y,m+1,0).getDate();
-  const prevDays    = new Date(y,m,0).getDate();
-  const today       = new Date(); today.setHours(0,0,0,0);
-  const grid        = document.getElementById('cal-grid');
-  const dayLabels   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-  let html = dayLabels.map(d=>`<div class="cal-day-label">${d}</div>`).join('');
-  for (let i=firstDay-1;i>=0;i--)
-    html += `<div class="cal-day other-month"><span>${prevDays-i}</span></div>`;
-  for (let d=1;d<=daysInMonth;d++) {
-    const dateStr  = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const dayDate  = new Date(y,m,d);
-    const isToday  = dayDate.getTime()===today.getTime();
-    const isSel    = calSelectedDate===dateStr;
-    const osOnDay  = db.ordens.filter(o=>toDateInput(o.prazo)===dateStr);
-    const dots     = osOnDay.length
-      ? '<div class="cal-dots">'+osOnDay.slice(0,3).map(o=>`<div class="cal-dot ${getPriorClass(o.prioridade)}"></div>`).join('')+'</div>'
-      : '';
-    html += `<div class="cal-day ${isToday?'today':''} ${isSel?'selected':''}" onclick="calSelectDay('${dateStr}')">
-      <span>${d}</span>${dots}</div>`;
+// ════════════════════════════════════════════════════════
+function renderCalendar(){
+  const months=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const y=calDate.getFullYear(),m=calDate.getMonth();
+  document.getElementById('cal-month-label').textContent=`${months[m]} de ${y}`;
+  const firstDay=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),pd=new Date(y,m,0).getDate();
+  const today=new Date();today.setHours(0,0,0,0);
+  const ords=myOrdens();
+  let html=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(d=>`<div class="cal-day-label">${d}</div>`).join('');
+  for(let i=firstDay-1;i>=0;i--) html+=`<div class="cal-day other-month"><span>${pd-i}</span></div>`;
+  for(let d=1;d<=dim;d++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dd=new Date(y,m,d);
+    const isT=dd.getTime()===today.getTime(),isSel=calSelectedDate===ds;
+    const od=ords.filter(o=>toDate(o.prazo)===ds);
+    const dots=od.length?'<div class="cal-dots">'+od.slice(0,3).map(o=>`<div class="cal-dot ${pClass(o.prioridade)}"></div>`).join('')+'</div>':'';
+    html+=`<div class="cal-day ${isT?'today':''} ${isSel?'selected':''}" onclick="calSelDay('${ds}')"><span>${d}</span>${dots}</div>`;
   }
-  const remaining = (7 - (firstDay+daysInMonth)%7) % 7;
-  for (let i=1;i<=remaining;i++) html += `<div class="cal-day other-month"><span>${i}</span></div>`;
-  grid.innerHTML = html;
-  if (calSelectedDate) calShowDay(calSelectedDate);
+  const rem=(7-(firstDay+dim)%7)%7;
+  for(let i=1;i<=rem;i++) html+=`<div class="cal-day other-month"><span>${i}</span></div>`;
+  document.getElementById('cal-grid').innerHTML=html;
+  if(calSelectedDate) calShow(calSelectedDate);
 }
-function calSelectDay(dateStr) { calSelectedDate=dateStr; renderCalendar(); calShowDay(dateStr); }
-function calShowDay(dateStr) {
-  const [y,m,d] = dateStr.split('-');
-  document.getElementById('cal-selected-label').textContent = `${d}/${m}/${y}`;
-  const osOnDay = db.ordens.filter(o=>toDateInput(o.prazo)===dateStr);
-  const list    = document.getElementById('cal-day-list');
-  if (!osOnDay.length) {
-    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px"><i class="fas fa-check-circle" style="color:var(--green)"></i><br>Nenhuma OS nesta data</div>`;
-    return;
-  }
-  list.innerHTML = osOnDay.map(os=>`
-    <div class="cal-os-item" onclick="viewOSDetail('${os.id}')">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <span class="cal-os-item-num">${os.numero}</span>
-        <span class="badge badge-${getPriorClass(os.prioridade)}">${os.prioridade}</span>
-      </div>
-      <div class="cal-os-item-unit">${os.unidade_nome||os.unidade||'–'}</div>
-      <div style="font-size:11px;color:var(--text3);margin-top:2px">${os.tipo||''} · ${os.status}</div>
-    </div>`).join('');
+function calSelDay(d){calSelectedDate=d;renderCalendar();calShow(d);}
+function calShow(ds){
+  const[y,m,d]=ds.split('-');
+  document.getElementById('cal-selected-label').textContent=`${d}/${m}/${y}`;
+  const od=myOrdens().filter(o=>toDate(o.prazo)===ds);
+  document.getElementById('cal-day-list').innerHTML=!od.length
+    ?`<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px"><i class="fas fa-check-circle" style="color:var(--green)"></i><br>Nenhuma OS nesta data</div>`
+    :od.map(os=>`<div class="cal-os-item" onclick="viewOS('${os.id}')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span class="cal-os-item-num">${os.numero}</span><span class="badge badge-${pClass(os.prioridade)}">${os.prioridade}</span></div><div class="cal-os-item-unit">${os.unidade_nome||'–'}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${os.tipo||''} · ${os.status}</div></div>`).join('');
 }
-function calPrev()  { calDate.setMonth(calDate.getMonth()-1); renderCalendar(); }
-function calNext()  { calDate.setMonth(calDate.getMonth()+1); renderCalendar(); }
-function calToday() { calDate=new Date(); renderCalendar(); }
+function calPrev(){calDate.setMonth(calDate.getMonth()-1);renderCalendar();}
+function calNext(){calDate.setMonth(calDate.getMonth()+1);renderCalendar();}
+function calToday(){calDate=new Date();renderCalendar();}
 
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 // UNIDADES
-// ════════════════════════════════════════════════════════════
-function renderUnidades() {
-  const search = (document.getElementById('uni-search')||{value:''}).value.toLowerCase();
-  const list   = db.unidades.filter(u=>!search ||
-    u.nome.toLowerCase().includes(search) ||
-    (u.endereco||'').toLowerCase().includes(search) ||
-    (u.bairro||'').toLowerCase().includes(search));
-  document.getElementById('uni-total').textContent  = db.unidades.length;
-  document.getElementById('uni-ativas').textContent = db.unidades.filter(u=>u.ativa).length;
-  document.getElementById('uni-ubs').textContent    = db.unidades.filter(u=>u.tipo==='UBS').length;
-  const grid = document.getElementById('unidades-grid');
-  if (!list.length) { grid.innerHTML=`<div class="empty-state"><i class="fas fa-building-columns"></i><h3>Nenhuma unidade encontrada</h3></div>`; return; }
-  grid.innerHTML = list.map(u=>{
-    const oc  = db.ordens.filter(o=>String(o.unidade_id)===String(u.id)).length;
-    const ucl = getUnitClass(u.tipo);
-    const gradients = {UBS:'var(--accent),var(--accent2)',UPA:'var(--red),#f59e0b',Hospital:'var(--orange),#f97316',CME:'var(--green),#06b6d4',Outro:'var(--purple),#6366f1'};
-    return `<div class="unit-card">
-      <div style="height:4px;background:linear-gradient(90deg,${gradients[u.tipo]||gradients.Outro})"></div>
+// ════════════════════════════════════════════════════════
+function renderUnidades(){
+  const s=(document.getElementById('uni-search')||{value:''}).value.toLowerCase();
+  const list=db.unidades.filter(u=>!s||u.nome.toLowerCase().includes(s)||(u.endereco||'').toLowerCase().includes(s));
+  document.getElementById('uni-total').textContent=db.unidades.length;
+  document.getElementById('uni-ativas').textContent=db.unidades.filter(u=>u.ativa).length;
+  document.getElementById('uni-ubs').textContent=db.unidades.filter(u=>u.tipo==='UBS').length;
+  const grads={UBS:'var(--accent),var(--accent2)',UPA:'var(--red),#f59e0b',Hospital:'var(--orange),#f97316',CME:'var(--green),#06b6d4',Outro:'var(--purple),#6366f1'};
+  const el=document.getElementById('unidades-grid');
+  if(!list.length){el.innerHTML=`<div class="empty-state"><i class="fas fa-building-columns"></i><h3>Nenhuma unidade encontrada</h3></div>`;return;}
+  el.innerHTML=list.map(u=>{
+    const oc=db.ordens.filter(o=>String(o.unidade_id)===String(u.id)).length;
+    const uc=u.tipo?.toLowerCase()||'outro';
+    return`<div class="unit-card"><div style="height:4px;background:linear-gradient(90deg,${grads[u.tipo]||grads.Outro})"></div>
       <div class="unit-card-body">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div class="unit-icon ${ucl}">${getUnitIcon(u.tipo)}</div>
-          <span class="badge ${u.ativa?'badge-concluida':'badge-cancelada'}">${u.ativa?'Ativa':'Inativa'}</span>
-        </div>
-        <div class="unit-name">${u.nome}</div>
-        <div style="margin-bottom:10px"><span class="badge badge-${ucl}">${u.tipo}</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="unit-icon ${uc}">${uIcon(u.tipo)}</div><span class="badge ${u.ativa?'badge-concluida':'badge-cancelada'}">${u.ativa?'Ativa':'Inativa'}</span></div>
+        <div class="unit-name">${u.nome}</div><div style="margin-bottom:10px"><span class="badge badge-${uc}">${u.tipo}</span></div>
         ${u.endereco?`<div class="unit-address"><i class="fas fa-location-dot"></i>${u.endereco}${u.bairro?', '+u.bairro:''}</div>`:''}
         ${u.tel?`<div class="unit-contact"><i class="fas fa-phone"></i>${u.tel}</div>`:''}
         ${u.resp?`<div class="unit-resp"><i class="fas fa-user-tie"></i>${u.resp}</div>`:''}
-        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-          <span style="font-size:12px;color:var(--text3)">${oc} OS${oc!==1?'s':''} no histórico</span>
-        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><span style="font-size:12px;color:var(--text3)">${oc} OS${oc!==1?'s':''} no histórico</span></div>
       </div>
-      <div class="unit-card-footer">
-        <button onclick="editUnit('${u.id}')"><i class="fas fa-pen"></i> Editar</button>
-        <button onclick="confirmDelete('unit','${u.id}')" style="color:var(--red)"><i class="fas fa-trash"></i></button>
-      </div>
+      <div class="unit-card-footer"><button onclick="openUnitModal('${u.id}')"><i class="fas fa-pen"></i>Editar</button><button onclick="confirmDelete('unit','${u.id}')" style="color:var(--red)"><i class="fas fa-trash"></i></button></div>
     </div>`;
   }).join('');
 }
-
-function openUnitModal(id) {
-  editingId = id||null; editingType = 'unit';
-  const u = id ? db.unidades.find(x=>String(x.id)===String(id)) : null;
-  document.getElementById('modal-unit-title').textContent = u ? 'Editar Unidade' : 'Nova Unidade de Saúde';
-  document.getElementById('unit-nome').value   = u?.nome||'';
-  document.getElementById('unit-tipo').value   = u?.tipo||'UBS';
-  document.getElementById('unit-end').value    = u?.endereco||'';
-  document.getElementById('unit-bairro').value = u?.bairro||'';
-  document.getElementById('unit-tel').value    = u?.tel||'';
-  document.getElementById('unit-resp').value   = u?.resp||'';
-  document.getElementById('unit-status').value = String(u?.ativa!==false);
+function openUnitModal(id){
+  editingId=id||null;
+  const u=id?db.unidades.find(x=>String(x.id)===String(id)):null;
+  document.getElementById('modal-unit-title').textContent=u?'Editar Unidade':'Nova Unidade';
+  document.getElementById('unit-nome').value=u?.nome||'';
+  document.getElementById('unit-tipo').value=u?.tipo||'UBS';
+  document.getElementById('unit-end').value=u?.endereco||'';
+  document.getElementById('unit-bairro').value=u?.bairro||'';
+  document.getElementById('unit-tel').value=u?.tel||'';
+  document.getElementById('unit-resp').value=u?.resp||'';
+  document.getElementById('unit-status').value=String(u?.ativa!==false);
   openModal('modal-unit');
 }
-function editUnit(id) { openUnitModal(id); }
-
-async function saveUnit() {
-  const nome = document.getElementById('unit-nome').value.trim();
-  if (!nome) { toast('Informe o nome da unidade','warning'); return; }
-  const payload = {
-    nome, tipo: document.getElementById('unit-tipo').value,
-    endereco: document.getElementById('unit-end').value,
-    bairro: document.getElementById('unit-bairro').value,
-    tel: document.getElementById('unit-tel').value,
-    resp: document.getElementById('unit-resp').value,
-    ativa: document.getElementById('unit-status').value==='true'
-  };
+async function saveUnit(){
+  const nome=document.getElementById('unit-nome').value.trim();
+  if(!nome){toast('Informe o nome','warning');return;}
+  const payload={nome,tipo:document.getElementById('unit-tipo').value,endereco:document.getElementById('unit-end').value,bairro:document.getElementById('unit-bairro').value,tel:document.getElementById('unit-tel').value,resp:document.getElementById('unit-resp').value,ativa:document.getElementById('unit-status').value==='true'};
   showLoading('Salvando...');
-  try {
-    if (editingId) { await sbUpdate('unidades', editingId, payload); toast('Unidade atualizada!'); }
-    else           { await sbInsert('unidades', payload); toast('Unidade criada!'); }
-    closeModal('modal-unit');
-    await reloadAndRender('unidades');
-  } catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+  try{
+    if(editingId)await sbPatch('unidades',editingId,payload);else await sbPost('unidades',payload);
+    toast(editingId?'Unidade atualizada!':'Unidade criada!');
+    closeModal('modal-unit');await reload('unidades');
+  }catch(e){hideLoading();toast('Erro: '+e.message,'error');}
 }
+async function deleteUnit(id){showLoading('Excluindo...');try{await sbDelete('unidades',id);toast('Unidade excluída','info');await reload('unidades');}catch(e){hideLoading();toast('Erro: '+e.message,'error');}}
 
-async function deleteUnit(id) {
-  showLoading('Excluindo...');
-  try { await sbDelete('unidades', id); toast('Unidade excluída','info'); await reloadAndRender('unidades'); }
-  catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
-}
-
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 // MATERIAIS
-// ════════════════════════════════════════════════════════════
-function renderMateriais() {
-  const search    = (document.getElementById('mat-search')||{value:''}).value.toLowerCase();
-  const filterCat = (document.getElementById('mat-filter-cat')||{value:''}).value;
-  const list = db.materiais.filter(m=>
-    (!search || m.nome.toLowerCase().includes(search) || (m.forn||'').toLowerCase().includes(search)) &&
-    (!filterCat || m.cat===filterCat));
-  document.getElementById('mat-total').textContent = db.materiais.length;
-  document.getElementById('mat-baixo').textContent = db.materiais.filter(m=>m.qtd<m.min).length;
-  document.getElementById('mat-valor').textContent = fmtCurrency(db.materiais.reduce((s,m)=>s+(m.qtd*m.custo),0));
-  const catColors = {Elétrico:'badge-aberta',Hidráulico:'badge-andamento',Pintura:'badge-média',Alvenaria:'badge-concluida',Carpintaria:'badge-baixa',HVAC:'badge-aguardando',Outros:'badge-cancelada'};
-  const tbody = document.getElementById('mat-tbody');
-  if (!list.length) { tbody.innerHTML=`<tr><td colspan="8"><div class="no-results">Nenhum material encontrado</div></td></tr>`; return; }
-  tbody.innerHTML = list.map(m=>{
-    const low = m.qtd < m.min;
-    return `<tr>
-      <td><div style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:8px;background:${low?'var(--red-dim)':'var(--green-dim)'};display:flex;align-items:center;justify-content:center;color:${low?'var(--red)':'var(--green)'}"><i class="fas fa-cube" style="font-size:13px"></i></div>
-        <span class="mat-name">${m.nome}</span></div></td>
-      <td><span class="badge ${catColors[m.cat]||'badge-cancelada'}">${m.cat}</span></td>
-      <td><span class="mat-qty ${low?'low':'ok'}">${m.qtd} <span style="font-size:10px;color:var(--text3)">(mín:${m.min})</span></span></td>
+// ════════════════════════════════════════════════════════
+function renderMateriais(){
+  const s=(document.getElementById('mat-search')||{value:''}).value.toLowerCase();
+  const fc=(document.getElementById('mat-filter-cat')||{value:''}).value;
+  const list=db.materiais.filter(m=>(!s||m.nome.toLowerCase().includes(s)||(m.forn||'').toLowerCase().includes(s))&&(!fc||m.cat===fc));
+  document.getElementById('mat-total').textContent=db.materiais.length;
+  document.getElementById('mat-baixo').textContent=db.materiais.filter(m=>m.qtd<m.min).length;
+  document.getElementById('mat-valor').textContent=fmtR(db.materiais.reduce((s,m)=>s+m.qtd*m.custo,0));
+  const catC={Elétrico:'badge-aberta',Hidráulico:'badge-andamento',Pintura:'badge-média',Alvenaria:'badge-concluida',Carpintaria:'badge-baixa',HVAC:'badge-aguardando',Outros:'badge-cancelada'};
+  const g=isGestor();
+  const tb=document.getElementById('mat-tbody');
+  if(!list.length){tb.innerHTML=`<tr><td colspan="8"><div class="no-results">Nenhum material encontrado</div></td></tr>`;return;}
+  tb.innerHTML=list.map(m=>{
+    const low=m.qtd<m.min;
+    return`<tr><td><div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:8px;background:${low?'var(--red-dim)':'var(--green-dim)'};display:flex;align-items:center;justify-content:center;color:${low?'var(--red)':'var(--green)'}"><i class="fas fa-cube" style="font-size:13px"></i></div><span class="mat-name">${m.nome}</span></div></td>
+      <td><span class="badge ${catC[m.cat]||'badge-cancelada'}">${m.cat}</span></td>
+      <td><span class="mat-qty ${low?'low':'ok'}">${m.qtd}<span style="font-size:10px;color:var(--text3);margin-left:4px">(mín:${m.min})</span></span></td>
       <td style="color:var(--text3);font-size:13px">${m.un||'–'}</td>
-      <td class="mat-cost">${fmtCurrency(m.custo)}</td>
+      <td class="mat-cost">${fmtR(m.custo)}</td>
       <td style="font-size:13px;color:var(--text2)">${m.forn||'–'}</td>
       <td><span class="badge ${low?'badge-alta':'badge-concluida'}">${low?'<i class="fas fa-triangle-exclamation"></i> Baixo':'<i class="fas fa-check"></i> OK'}</span></td>
-      <td>
-        <button onclick="editMat('${m.id}')" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:15px;padding:4px 6px"><i class="fas fa-pen"></i></button>
-        <button onclick="confirmDelete('mat','${m.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;padding:4px 6px"><i class="fas fa-trash"></i></button>
-      </td></tr>`;
+      <td class="so-gestor" style="${g?'':'display:none'}">${g?`<button onclick="openMatModal('${m.id}')" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:15px;padding:4px 6px"><i class="fas fa-pen"></i></button><button onclick="confirmDelete('mat','${m.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;padding:4px 6px"><i class="fas fa-trash"></i></button>`:''}</td>
+    </tr>`;
   }).join('');
 }
-
-function openMatModal() {
-  editingId=null; editingType='mat';
-  document.getElementById('modal-mat-title').textContent = 'Novo Material';
-  ['mat-nome','mat-qtd','mat-min','mat-un','mat-custo','mat-forn'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('mat-cat').value='Elétrico';
+function openMatModal(id){
+  editingId=id||null;
+  const m=id?db.materiais.find(x=>String(x.id)===String(id)):null;
+  document.getElementById('modal-mat-title').textContent=m?'Editar Material':'Novo Material';
+  document.getElementById('mat-nome').value=m?.nome||'';
+  document.getElementById('mat-cat').value=m?.cat||'Elétrico';
+  document.getElementById('mat-qtd').value=m?.qtd??'';
+  document.getElementById('mat-min').value=m?.min??'';
+  document.getElementById('mat-un').value=m?.un||'';
+  document.getElementById('mat-custo').value=m?.custo??'';
+  document.getElementById('mat-forn').value=m?.forn||'';
   openModal('modal-mat');
 }
-function editMat(id) {
-  const m = db.materiais.find(x=>String(x.id)===String(id));
-  if (!m) return;
-  editingId=id; editingType='mat';
-  document.getElementById('modal-mat-title').textContent='Editar Material';
-  document.getElementById('mat-nome').value  = m.nome;
-  document.getElementById('mat-cat').value   = m.cat;
-  document.getElementById('mat-qtd').value   = m.qtd;
-  document.getElementById('mat-min').value   = m.min;
-  document.getElementById('mat-un').value    = m.un||'';
-  document.getElementById('mat-custo').value = m.custo;
-  document.getElementById('mat-forn').value  = m.forn||'';
-  openModal('modal-mat');
-}
-async function saveMat() {
-  const nome = document.getElementById('mat-nome').value.trim();
-  if (!nome) { toast('Informe o nome do material','warning'); return; }
-  const payload = {
-    nome, cat: document.getElementById('mat-cat').value,
-    qtd: parseFloat(document.getElementById('mat-qtd').value)||0,
-    min: parseFloat(document.getElementById('mat-min').value)||0,
-    un: document.getElementById('mat-un').value,
-    custo: parseFloat(document.getElementById('mat-custo').value)||0,
-    forn: document.getElementById('mat-forn').value
-  };
+async function saveMat(){
+  const nome=document.getElementById('mat-nome').value.trim();
+  if(!nome){toast('Informe o nome','warning');return;}
+  const payload={nome,cat:document.getElementById('mat-cat').value,qtd:parseFloat(document.getElementById('mat-qtd').value)||0,min:parseFloat(document.getElementById('mat-min').value)||0,un:document.getElementById('mat-un').value,custo:parseFloat(document.getElementById('mat-custo').value)||0,forn:document.getElementById('mat-forn').value};
   showLoading('Salvando...');
-  try {
-    if (editingId) { await sbUpdate('materiais', editingId, payload); toast('Material atualizado!'); }
-    else           { await sbInsert('materiais', payload); toast('Material adicionado!'); }
-    closeModal('modal-mat');
-    await reloadAndRender('materiais');
-  } catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+  try{if(editingId)await sbPatch('materiais',editingId,payload);else await sbPost('materiais',payload);toast(editingId?'Atualizado!':'Adicionado!');closeModal('modal-mat');await reload('materiais');}catch(e){hideLoading();toast('Erro: '+e.message,'error');}
 }
-async function deleteMat(id) {
-  showLoading('Excluindo...');
-  try { await sbDelete('materiais', id); toast('Material excluído','info'); await reloadAndRender('materiais'); }
-  catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
-}
+async function deleteMat(id){showLoading('Excluindo...');try{await sbDelete('materiais',id);toast('Excluído','info');await reload('materiais');}catch(e){hideLoading();toast('Erro: '+e.message,'error');}}
 
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 // TÉCNICOS
-// ════════════════════════════════════════════════════════════
-function renderTecnicos() {
-  document.getElementById('tec-total').textContent     = db.tecnicos.length;
-  document.getElementById('tec-ativos').textContent    = db.tecnicos.filter(t=>t.ativo).length;
-  document.getElementById('tec-os-abertas').textContent = db.ordens.filter(o=>o.status==='Em Andamento').length;
-  const grid = document.getElementById('tec-grid');
-  if (!db.tecnicos.length) { grid.innerHTML=`<div class="empty-state"><i class="fas fa-users"></i><h3>Nenhum técnico cadastrado</h3></div>`; return; }
-  grid.innerHTML = db.tecnicos.map(t=>{
-    const color     = getAvatarColor(t.nome);
-    const osTotal   = db.ordens.filter(o=>o.tecnico===t.nome).length;
-    const osAndamento = db.ordens.filter(o=>o.tecnico===t.nome && o.status==='Em Andamento').length;
-    return `<div class="tec-card">
-      <div class="tec-online ${t.ativo?'ativo':'inativo'}"></div>
-      <div class="tec-avatar" style="background:linear-gradient(135deg,${color},${color}99)">${initials(t.nome)}</div>
-      <div>
-        <div class="tec-name">${t.nome}</div>
-        <div class="tec-spec"><i class="fas fa-tools" style="margin-right:4px"></i>${t.esp}</div>
-        ${t.tel?`<div style="font-size:12px;color:var(--text3);margin-top:4px"><i class="fas fa-phone" style="margin-right:4px"></i>${t.tel}</div>`:''}
-        ${t.email?`<div style="font-size:12px;color:var(--text3);margin-top:2px"><i class="fas fa-envelope" style="margin-right:4px"></i>${t.email}</div>`:''}
-        ${t.reg?`<div style="font-size:11px;color:var(--text3);margin-top:2px;font-family:'JetBrains Mono',monospace">${t.reg}</div>`:''}
-      </div>
-      <div class="tec-stats">
-        <div class="tec-stat"><div class="tec-stat-val" style="color:var(--accent)">${osTotal}</div><div class="tec-stat-lbl">Total OSs</div></div>
-        <div class="tec-stat"><div class="tec-stat-val" style="color:var(--orange)">${osAndamento}</div><div class="tec-stat-lbl">Em Andamento</div></div>
-        <div class="tec-stat"><div class="tec-stat-val" style="color:${t.ativo?'var(--green)':'var(--text3)'}">${t.ativo?'Ativo':'Inativo'}</div><div class="tec-stat-lbl">Status</div></div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:4px">
-        <button class="action-btn" onclick="editTec('${t.id}')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit"><i class="fas fa-pen"></i>Editar</button>
-        <button onclick="confirmDelete('tec','${t.id}')" style="padding:8px 12px;border-radius:8px;border:1px solid rgba(247,107,107,.3);background:var(--red-dim);color:var(--red);font-size:12px;cursor:pointer;font-family:inherit"><i class="fas fa-trash"></i></button>
-      </div>
+// ════════════════════════════════════════════════════════
+function renderTecnicos(){
+  document.getElementById('tec-total').textContent=db.tecnicos.length;
+  document.getElementById('tec-ativos').textContent=db.tecnicos.filter(t=>t.ativo).length;
+  document.getElementById('tec-os-abertas').textContent=db.ordens.filter(o=>o.status==='Em Andamento').length;
+  const el=document.getElementById('tec-grid');
+  if(!db.tecnicos.length){el.innerHTML=`<div class="empty-state"><i class="fas fa-users"></i><h3>Nenhum técnico cadastrado</h3></div>`;return;}
+  el.innerHTML=db.tecnicos.map(t=>{
+    const cor=aColor(t.nome),osT=db.ordens.filter(o=>o.tecnico===t.nome).length,osA=db.ordens.filter(o=>o.tecnico===t.nome&&o.status==='Em Andamento').length;
+    return`<div class="tec-card"><div class="tec-online ${t.ativo?'ativo':'inativo'}"></div>
+      <div class="tec-avatar" style="background:linear-gradient(135deg,${cor},${cor}99)">${ini(t.nome)}</div>
+      <div><div class="tec-name">${t.nome}</div><div class="tec-spec"><i class="fas fa-tools" style="margin-right:4px"></i>${t.esp}</div>${t.tel?`<div style="font-size:12px;color:var(--text3);margin-top:4px"><i class="fas fa-phone" style="margin-right:4px"></i>${t.tel}</div>`:''}</div>
+      <div class="tec-stats"><div class="tec-stat"><div class="tec-stat-val" style="color:var(--accent)">${osT}</div><div class="tec-stat-lbl">Total OSs</div></div><div class="tec-stat"><div class="tec-stat-val" style="color:var(--orange)">${osA}</div><div class="tec-stat-lbl">Andamento</div></div><div class="tec-stat"><div class="tec-stat-val" style="color:${t.ativo?'var(--green)':'var(--text3)'}">${t.ativo?'Ativo':'Inativo'}</div><div class="tec-stat-lbl">Status</div></div></div>
+      <div style="display:flex;gap:8px;margin-top:4px"><button onclick="openTecModal('${t.id}')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit"><i class="fas fa-pen"></i>Editar</button><button onclick="confirmDelete('tec','${t.id}')" style="padding:8px 12px;border-radius:8px;border:1px solid rgba(247,107,107,.3);background:var(--red-dim);color:var(--red);font-size:12px;cursor:pointer;font-family:inherit"><i class="fas fa-trash"></i></button></div>
     </div>`;
   }).join('');
 }
-function openTecModal() {
-  editingId=null; editingType='tec';
-  document.getElementById('modal-tec-title').textContent='Novo Técnico';
-  ['tec-nome','tec-tel','tec-reg','tec-email'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('tec-esp').value='Elétrica';
-  document.getElementById('tec-status').value='true';
+function openTecModal(id){
+  editingId=id||null;
+  const t=id?db.tecnicos.find(x=>String(x.id)===String(id)):null;
+  document.getElementById('modal-tec-title').textContent=t?'Editar Técnico':'Novo Técnico';
+  document.getElementById('tec-nome').value=t?.nome||'';
+  document.getElementById('tec-esp').value=t?.esp||'Elétrica';
+  document.getElementById('tec-tel').value=t?.tel||'';
+  document.getElementById('tec-reg').value=t?.reg||'';
+  document.getElementById('tec-email').value=t?.email||'';
+  document.getElementById('tec-status').value=String(t?.ativo!==false);
   openModal('modal-tec');
 }
-function editTec(id) {
-  const t = db.tecnicos.find(x=>String(x.id)===String(id));
-  if (!t) return;
-  editingId=id; editingType='tec';
-  document.getElementById('modal-tec-title').textContent='Editar Técnico';
-  document.getElementById('tec-nome').value  = t.nome;
-  document.getElementById('tec-esp').value   = t.esp;
-  document.getElementById('tec-tel').value   = t.tel||'';
-  document.getElementById('tec-reg').value   = t.reg||'';
-  document.getElementById('tec-email').value = t.email||'';
-  document.getElementById('tec-status').value = String(t.ativo);
-  openModal('modal-tec');
-}
-async function saveTec() {
-  const nome = document.getElementById('tec-nome').value.trim();
-  if (!nome) { toast('Informe o nome do técnico','warning'); return; }
-  const payload = {
-    nome, esp: document.getElementById('tec-esp').value,
-    tel: document.getElementById('tec-tel').value,
-    reg: document.getElementById('tec-reg').value,
-    email: document.getElementById('tec-email').value,
-    ativo: document.getElementById('tec-status').value==='true'
-  };
+async function saveTec(){
+  const nome=document.getElementById('tec-nome').value.trim();if(!nome){toast('Informe o nome','warning');return;}
+  const payload={nome,esp:document.getElementById('tec-esp').value,tel:document.getElementById('tec-tel').value,reg:document.getElementById('tec-reg').value,email:document.getElementById('tec-email').value,ativo:document.getElementById('tec-status').value==='true'};
   showLoading('Salvando...');
-  try {
-    if (editingId) { await sbUpdate('tecnicos', editingId, payload); toast('Técnico atualizado!'); }
-    else           { await sbInsert('tecnicos', payload); toast('Técnico cadastrado!'); }
-    closeModal('modal-tec');
-    await reloadAndRender('tecnicos');
-  } catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
+  try{if(editingId)await sbPatch('tecnicos',editingId,payload);else await sbPost('tecnicos',payload);toast(editingId?'Atualizado!':'Cadastrado!');closeModal('modal-tec');await reload('tecnicos');}catch(e){hideLoading();toast('Erro: '+e.message,'error');}
 }
-async function deleteTec(id) {
-  showLoading('Excluindo...');
-  try { await sbDelete('tecnicos', id); toast('Técnico excluído','info'); await reloadAndRender('tecnicos'); }
-  catch(e) { hideLoading(); toast('Erro: '+e.message,'error'); }
-}
+async function deleteTec(id){showLoading('Excluindo...');try{await sbDelete('tecnicos',id);toast('Excluído','info');await reload('tecnicos');}catch(e){hideLoading();toast('Erro: '+e.message,'error');}}
 
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 // RELATÓRIOS
-// ════════════════════════════════════════════════════════════
-function renderRelatorios() {
-  const total    = db.ordens.length;
-  const conc     = db.ordens.filter(o=>o.status==='Concluída').length;
-  const taxa     = total>0 ? Math.round(conc/total*100) : 0;
-  const atrasadas = db.ordens.filter(o=>isLate(o)).length;
-  const custo    = db.materiais.reduce((s,m)=>s+m.qtd*m.custo,0);
-  document.getElementById('rel-total-os').textContent  = total;
-  document.getElementById('rel-taxa').textContent      = taxa+'%';
-  document.getElementById('rel-atrasadas').textContent = atrasadas;
-  document.getElementById('rel-mat-custo').textContent = fmtCurrency(custo);
-
-  // Status
-  const statusCounts  = {};
-  db.ordens.forEach(o=>{ statusCounts[o.status]=(statusCounts[o.status]||0)+1; });
-  const statusColors  = {'Aberta':'#4f8ef7','Em Andamento':'#a78bfa','Aguardando Material':'#f5a742','Concluída':'#22d3a0','Cancelada':'#5a6478'};
-  if (chartStatusInst)  { chartStatusInst.destroy();  chartStatusInst=null; }
-  chartStatusInst = new Chart(document.getElementById('chartStatus').getContext('2d'), {
-    type:'pie',
-    data:{ labels:Object.keys(statusCounts), datasets:[{ data:Object.values(statusCounts), backgroundColor:Object.keys(statusCounts).map(s=>statusColors[s]||'#5a6478'), borderWidth:0 }] },
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{ color:'#8892a4', font:{size:12} } } } }
-  });
-
-  // Tipos
-  const tipoCounts = {};
-  db.ordens.forEach(o=>{ if(o.tipo) tipoCounts[o.tipo]=(tipoCounts[o.tipo]||0)+1; });
-  if (chartTipoInst)   { chartTipoInst.destroy();   chartTipoInst=null; }
-  chartTipoInst = new Chart(document.getElementById('chartTipo').getContext('2d'), {
-    type:'bar',
-    data:{ labels:Object.keys(tipoCounts), datasets:[{ data:Object.values(tipoCounts), backgroundColor:'rgba(79,142,247,0.7)', borderRadius:6, borderWidth:0 }] },
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#8892a4',font:{size:11}},grid:{color:'rgba(255,255,255,0.04)'}}, y:{ticks:{color:'#8892a4',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}} } }
-  });
-
-  // Mensal
-  const todayD = new Date();
-  const mLabels=[], mCounts=[];
-  const mNames=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  for (let i=5;i>=0;i--) {
-    const d = new Date(todayD.getFullYear(), todayD.getMonth()-i, 1);
-    mLabels.push(mNames[d.getMonth()]+'/'+String(d.getFullYear()).slice(2));
-    mCounts.push(db.ordens.filter(o=>{ if(!o.data_abertura) return false; const od=new Date(o.data_abertura); return od.getMonth()===d.getMonth()&&od.getFullYear()===d.getFullYear(); }).length);
-  }
-  if (chartMensalInst) { chartMensalInst.destroy(); chartMensalInst=null; }
-  chartMensalInst = new Chart(document.getElementById('chartMensal').getContext('2d'), {
-    type:'line',
-    data:{ labels:mLabels, datasets:[{ label:'OSs Abertas', data:mCounts, borderColor:'#4f8ef7', backgroundColor:'rgba(79,142,247,0.1)', tension:.4, fill:true, pointBackgroundColor:'#4f8ef7', pointRadius:4 }] },
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#8892a4'},grid:{color:'rgba(255,255,255,0.04)'}}, y:{ticks:{color:'#8892a4',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}} } }
-  });
-
-  // Por unidade
-  const uniCounts = {};
-  db.ordens.forEach(o=>{ const k=o.unidade_nome||o.unidade||'–'; uniCounts[k]=(uniCounts[k]||0)+1; });
-  if (chartUnidadeInst) { chartUnidadeInst.destroy(); chartUnidadeInst=null; }
-  chartUnidadeInst = new Chart(document.getElementById('chartUnidade').getContext('2d'), {
-    type:'bar',
-    data:{ labels:Object.keys(uniCounts), datasets:[{ data:Object.values(uniCounts), backgroundColor:['#4f8ef7','#a78bfa','#22d3a0','#f5a742','#f76b6b'], borderRadius:6, borderWidth:0 }] },
-    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#8892a4',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}}, y:{ticks:{color:'#8892a4',font:{size:11}},grid:{color:'transparent'}} } }
-  });
+// ════════════════════════════════════════════════════════
+function renderRelatorios(){
+  const total=db.ordens.length,conc=db.ordens.filter(o=>o.status==='Concluída').length;
+  document.getElementById('rel-total-os').textContent=total;
+  document.getElementById('rel-taxa').textContent=(total>0?Math.round(conc/total*100):0)+'%';
+  document.getElementById('rel-atrasadas').textContent=db.ordens.filter(o=>isLate(o)).length;
+  document.getElementById('rel-mat-custo').textContent=fmtR(db.materiais.reduce((s,m)=>s+m.qtd*m.custo,0));
+  const sC={};db.ordens.forEach(o=>{sC[o.status]=(sC[o.status]||0)+1;});
+  const sCols={'Aberta':'#4f8ef7','Em Andamento':'#a78bfa','Aguardando Material':'#f5a742','Concluída':'#22d3a0','Cancelada':'#5a6478'};
+  if(chartSI){chartSI.destroy();chartSI=null;} chartSI=new Chart(document.getElementById('chartStatus').getContext('2d'),{type:'pie',data:{labels:Object.keys(sC),datasets:[{data:Object.values(sC),backgroundColor:Object.keys(sC).map(s=>sCols[s]||'#5a6478'),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8892a4',font:{size:12}}}}}});
+  const tC={};db.ordens.forEach(o=>{if(o.tipo)tC[o.tipo]=(tC[o.tipo]||0)+1;});
+  if(chartTI){chartTI.destroy();chartTI=null;} chartTI=new Chart(document.getElementById('chartTipo').getContext('2d'),{type:'bar',data:{labels:Object.keys(tC),datasets:[{data:Object.values(tC),backgroundColor:'rgba(79,142,247,0.7)',borderRadius:6,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8892a4',font:{size:11}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8892a4',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+  const mL=[],mC=[],mN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],td=new Date();
+  for(let i=5;i>=0;i--){const d=new Date(td.getFullYear(),td.getMonth()-i,1);mL.push(mN[d.getMonth()]+'/'+String(d.getFullYear()).slice(2));mC.push(db.ordens.filter(o=>{if(!o.data_abertura)return false;const od=new Date(o.data_abertura);return od.getMonth()===d.getMonth()&&od.getFullYear()===d.getFullYear();}).length);}
+  if(chartMI){chartMI.destroy();chartMI=null;} chartMI=new Chart(document.getElementById('chartMensal').getContext('2d'),{type:'line',data:{labels:mL,datasets:[{label:'OSs',data:mC,borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,0.1)',tension:.4,fill:true,pointBackgroundColor:'#4f8ef7',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8892a4'},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8892a4',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+  const uC={};db.ordens.forEach(o=>{const k=o.unidade_nome||'–';uC[k]=(uC[k]||0)+1;});
+  if(chartUI){chartUI.destroy();chartUI=null;} chartUI=new Chart(document.getElementById('chartUnidade').getContext('2d'),{type:'bar',data:{labels:Object.keys(uC),datasets:[{data:Object.values(uC),backgroundColor:['#4f8ef7','#a78bfa','#22d3a0','#f5a742','#f76b6b'],borderRadius:6,borderWidth:0}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8892a4',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8892a4',font:{size:11}},grid:{color:'transparent'}}}}});
 }
-function printReport() { window.print(); }
 
-// ════════════════════════════════════════════════════════════
-// MODALS & CONFIRM
-// ════════════════════════════════════════════════════════════
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+// ════════════════════════════════════════════════════════
+// USUÁRIOS (gestor gerencia acessos de unidades)
+// ════════════════════════════════════════════════════════
+function renderUsuarios(){
+  const tb=document.getElementById('user-tbody');
+  if(!db.usuarios.length){tb.innerHTML=`<tr><td colspan="6"><div class="no-results">Nenhum usuário cadastrado</div></td></tr>`;return;}
+  const chips={gestor:'perfil-gestor',unidade:'perfil-unidade'};
+  const labels={gestor:'Gestor',unidade:'Unidade'};
+  tb.innerHTML=db.usuarios.map(u=>{
+    const vinculo=u.perfil==='unidade'?(db.unidades.find(x=>String(x.id)===String(u.unidade_id))?.nome||'–'):'–';
+    return`<tr>
+      <td style="font-weight:600">${u.nome}</td>
+      <td style="color:var(--text3);font-size:13px">${u.email}</td>
+      <td><span class="perfil-chip ${chips[u.perfil]||''}">${labels[u.perfil]||u.perfil}</span></td>
+      <td style="color:var(--text2)">${vinculo}</td>
+      <td><span class="badge ${u.ativo!==false?'badge-concluida':'badge-cancelada'}">${u.ativo!==false?'Ativo':'Inativo'}</span></td>
+      <td>
+        <button onclick="toggleUser('${u.id}',${u.ativo!==false})" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;padding:4px 8px;font-family:inherit">
+          ${u.ativo!==false?'Desativar':'Ativar'}
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+}
 
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target===el) el.classList.remove('open'); });
-});
+function openUserModal(){
+  document.getElementById('user-nome').value='';
+  document.getElementById('user-email').value='';
+  document.getElementById('user-senha').value='';
+  document.getElementById('user-unidade').innerHTML=db.unidades.filter(u=>u.ativa).map(u=>`<option value="${u.id}">${u.nome}</option>`).join('');
+  openModal('modal-user');
+}
 
-function confirmDelete(type, id) {
-  const msgs = {
-    os:'Tem certeza que deseja excluir esta Ordem de Serviço? Esta ação não pode ser desfeita.',
-    unit:'Tem certeza que deseja excluir esta unidade?',
-    mat:'Tem certeza que deseja excluir este material?',
-    tec:'Tem certeza que deseja excluir este técnico?'
-  };
-  document.getElementById('confirm-msg').textContent = msgs[type]||'Esta ação não pode ser desfeita.';
-  document.getElementById('confirm-ok-btn').onclick = () => {
-    closeConfirm();
-    if (type==='os')   deleteOS(id);
-    else if (type==='unit') deleteUnit(id);
-    else if (type==='mat')  deleteMat(id);
-    else if (type==='tec')  deleteTec(id);
-  };
+async function saveUser(){
+  const nome=document.getElementById('user-nome').value.trim();
+  const email=document.getElementById('user-email').value.trim();
+  const senha=document.getElementById('user-senha').value;
+  const unidadeId=document.getElementById('user-unidade').value;
+  if(!nome||!email||!senha){toast('Preencha todos os campos','warning');return;}
+  if(senha.length<6){toast('Senha deve ter no mínimo 6 caracteres','warning');return;}
+  showLoading('Criando acesso...');
+  try {
+    // Cria usuário via signUp
+    const res=await fetch(`${SUPA_URL}/auth/v1/signup`,{
+      method:'POST', headers:{apikey:SUPA_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:senha,data:{nome,perfil:'unidade'}})
+    });
+    const data=await res.json();
+    if(data.error) throw new Error(data.error.message||data.msg||JSON.stringify(data.error));
+    const uid=data.user?.id;
+    if(uid){
+      await sbPatch('perfis',uid,{nome,perfil:'unidade',unidade_id:unidadeId,ativo:true});
+    }
+    toast('Acesso criado! Usuário pode fazer login agora.');
+    closeModal('modal-user');
+    await reload('usuarios');
+  } catch(e){ hideLoading(); toast('Erro: '+e.message,'error'); }
+}
+
+async function toggleUser(id,ativo){
+  showLoading('Atualizando...');
+  try{await sbPatch('perfis',id,{ativo:!ativo});toast('Status atualizado!');await reload('usuarios');}
+  catch(e){hideLoading();toast('Erro: '+e.message,'error');}
+}
+
+// ════════════════════════════════════════════════════════
+// MEU PERFIL
+// ════════════════════════════════════════════════════════
+function renderMeuPerfil(){
+  const chips={gestor:'perfil-gestor',unidade:'perfil-unidade'};
+  const labels={gestor:'Gestor',unidade:'Unidade de Saúde'};
+  const cor=aColor(perfil?.nome||'');
+  document.getElementById('perfil-avatar-big').textContent=ini(perfil?.nome||'');
+  document.getElementById('perfil-avatar-big').style.background=`linear-gradient(135deg,${cor},${cor}99)`;
+  document.getElementById('perfil-nome-big').textContent=perfil?.nome||'–';
+  document.getElementById('perfil-chip-big').innerHTML=`<span class="perfil-chip ${chips[perfil?.perfil]||''}">${labels[perfil?.perfil]||perfil?.perfil}</span>`;
+  document.getElementById('perfil-email-big').textContent=perfil?.email||'–';
+  const vinculo=perfil?.perfil==='unidade'?(db.unidades.find(u=>String(u.id)===String(perfil?.unidade_id))?.nome||'–'):'Acesso completo ao sistema';
+  document.getElementById('perfil-vinculo').textContent=vinculo;
+  document.getElementById('perfil-vinculo-row').querySelector('.detail-label').textContent=perfil?.perfil==='gestor'?'Nível de acesso':'Unidade';
+}
+
+async function alterarSenha(){
+  const nova=document.getElementById('nova-senha').value;
+  if(!nova||nova.length<6){toast('Nova senha deve ter pelo menos 6 caracteres','warning');return;}
+  showLoading('Alterando senha...');
+  try{
+    const r=await fetch(`${SUPA_URL}/auth/v1/user`,{method:'PUT',headers:{apikey:SUPA_KEY,Authorization:`Bearer ${session?.access_token}`,'Content-Type':'application/json'},body:JSON.stringify({password:nova})});
+    const d=await r.json();
+    if(d.error) throw new Error(d.error.message);
+    hideLoading(); toast('Senha alterada com sucesso!');
+    document.getElementById('nova-senha').value='';
+  }catch(e){hideLoading();toast('Erro: '+e.message,'error');}
+}
+
+// ════════════════════════════════════════════════════════
+// MODALS & CONFIRM & TOAST
+// ════════════════════════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));document.querySelector('.confirm-overlay.open')?.classList.remove('open');}});
+function confirmDelete(type,id){
+  document.getElementById('confirm-msg').textContent={os:'Excluir esta Ordem de Serviço?',unit:'Excluir esta unidade?',mat:'Excluir este material?',tec:'Excluir este técnico?'}[type]||'Esta ação não pode ser desfeita.';
+  document.getElementById('confirm-ok-btn').onclick=()=>{closeConfirm();({os:deleteOS,unit:deleteUnit,mat:deleteMat,tec:deleteTec})[type]?.(id);};
   document.getElementById('confirm-dialog').classList.add('open');
 }
-function closeConfirm() { document.getElementById('confirm-dialog').classList.remove('open'); }
-
-// ════════════════════════════════════════════════════════════
-// TOAST
-// ════════════════════════════════════════════════════════════
-function toast(msg, type='success') {
-  const icons = {success:'circle-check',error:'circle-xmark',warning:'triangle-exclamation',info:'circle-info'};
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<i class="fas fa-${icons[type]||'circle-check'} toast-icon"></i><span class="toast-msg">${msg}</span>`;
+function closeConfirm(){document.getElementById('confirm-dialog').classList.remove('open');}
+function toast(msg,type='success'){
+  const icons={success:'circle-check',error:'circle-xmark',warning:'triangle-exclamation',info:'circle-info'};
+  const el=document.createElement('div');el.className=`toast ${type}`;
+  el.innerHTML=`<i class="fas fa-${icons[type]||'circle-check'} toast-icon"></i><span class="toast-msg">${msg}</span>`;
   document.getElementById('toast-container').appendChild(el);
-  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(20px)'; el.style.transition='all .3s'; setTimeout(()=>el.remove(),300); }, 3500);
+  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(20px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),300);},3500);
 }
 
-// ════════════════════════════════════════════════════════════
-// ESC
-// ════════════════════════════════════════════════════════════
-document.addEventListener('keydown', e => {
-  if (e.key==='Escape') {
-    document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
-    document.querySelector('.confirm-overlay.open')?.classList.remove('open');
+// ════════════════════════════════════════════════════════
+// BOOT — verifica sessão salva
+// ════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',async()=>{
+  calDate=new Date();
+  const saved=localStorage.getItem('mts');
+  if(saved){
+    try{
+      session=JSON.parse(saved);
+      const r=await fetch(`${SUPA_URL}/auth/v1/user`,{headers:{apikey:SUPA_KEY,Authorization:`Bearer ${session.access_token}`}});
+      if(r.ok){ await loadPerfil(); bootApp(); return; }
+    }catch(e){}
+    localStorage.removeItem('mts');
   }
-});
-
-// ════════════════════════════════════════════════════════════
-// BOOT
-// ════════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  calDate = new Date();
-  initDB();
+  document.getElementById('login-screen').style.display='flex';
 });
 </script>
 </body>
