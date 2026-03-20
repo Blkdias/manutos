@@ -764,6 +764,56 @@ body {
   .mat-table { font-size: 12px; }
 }
 
+/* Itens só para gestor — ocultos por padrão, visíveis quando body tem .gestor-ativo */
+.so-gestor { display: none !important; }
+body.gestor-ativo .so-gestor { display: revert !important; }
+body.gestor-ativo .nav-item.so-gestor { display: flex !important; }
+body.gestor-ativo .nav-group-label.so-gestor { display: block !important; }
+body.gestor-ativo th.so-gestor { display: table-cell !important; }
+body.gestor-ativo td.so-gestor { display: table-cell !important; }
+
+/* ─── FOTOS DA OS ─── */
+.os-fotos-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px; margin-top: 12px;
+}
+.os-foto-thumb {
+  aspect-ratio: 1; border-radius: 10px; overflow: hidden;
+  background: var(--bg3); border: 1px solid var(--border);
+  cursor: pointer; position: relative; transition: transform .2s;
+}
+.os-foto-thumb:hover { transform: scale(1.03); border-color: var(--border2); }
+.os-foto-thumb img { width:100%; height:100%; object-fit:cover; }
+.os-foto-del {
+  position: absolute; top:5px; right:5px;
+  background: rgba(0,0,0,.7); border: none; color: #fff;
+  border-radius: 50%; width:22px; height:22px; font-size:10px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .2s;
+}
+.os-foto-thumb:hover .os-foto-del { opacity:1; }
+.os-foto-add {
+  aspect-ratio:1; border-radius:10px;
+  border: 2px dashed var(--border2); background:var(--bg3);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:6px; cursor:pointer; color:var(--text3); font-size:12px;
+  transition: all .2s;
+}
+.os-foto-add:hover { border-color:var(--accent); color:var(--accent); background:rgba(79,142,247,.06); }
+.os-foto-add i { font-size:22px; }
+
+/* Lightbox */
+.lightbox {
+  position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:99999;
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.lightbox.open { display:flex; }
+.lightbox img { max-width:90vw; max-height:90vh; border-radius:12px; object-fit:contain; }
+.lightbox-close {
+  position:absolute; top:20px; right:24px;
+  background:none; border:none; color:#fff; font-size:28px; cursor:pointer;
+}
+
 /* ─── PRINT ─── */
 @media print {
   .sidebar, .topbar, .modal-overlay, .toast-container { display: none !important; }
@@ -1000,14 +1050,14 @@ body {
     <button class="nav-item" onclick="showPage('calendario')"><i class="fas fa-calendar-days"></i> Calendário</button>
 
     <!-- Só gestor vê estas seções -->
-    <div class="nav-group-label so-gestor" style="margin-top:16px;display:none">Cadastros</div>
-    <button class="nav-item so-gestor" onclick="showPage('unidades')" style="display:none"><i class="fas fa-building-columns"></i> Unidades de Saúde</button>
-    <button class="nav-item so-gestor" onclick="showPage('materiais')" style="display:none"><i class="fas fa-boxes-stacked"></i> Materiais<span class="nav-badge" id="nav-badge-mat" style="display:none">!</span></button>
-    <button class="nav-item so-gestor" onclick="showPage('tecnicos')" style="display:none"><i class="fas fa-user-gear"></i> Técnicos</button>
+    <div class="nav-group-label so-gestor" style="margin-top:16px">Cadastros</div>
+    <button class="nav-item so-gestor" onclick="showPage('unidades')"><i class="fas fa-building-columns"></i> Unidades de Saúde</button>
+    <button class="nav-item so-gestor" onclick="showPage('materiais')"><i class="fas fa-boxes-stacked"></i> Materiais<span class="nav-badge" id="nav-badge-mat" style="display:none">!</span></button>
+    <button class="nav-item so-gestor" onclick="showPage('tecnicos')"><i class="fas fa-user-gear"></i> Técnicos</button>
 
-    <div class="nav-group-label so-gestor" style="margin-top:16px;display:none">Análise</div>
-    <button class="nav-item so-gestor" onclick="showPage('relatorios')" style="display:none"><i class="fas fa-chart-pie"></i> Relatórios</button>
-    <button class="nav-item so-gestor" onclick="showPage('usuarios')" style="display:none"><i class="fas fa-users-gear"></i> Usuários</button>
+    <div class="nav-group-label so-gestor" style="margin-top:16px">Análise</div>
+    <button class="nav-item so-gestor" onclick="showPage('relatorios')"><i class="fas fa-chart-pie"></i> Relatórios</button>
+    <button class="nav-item so-gestor" onclick="showPage('usuarios')"><i class="fas fa-users-gear"></i> Usuários</button>
   </nav>
   <div class="sidebar-footer">
     <div class="user-avatar" id="sidebar-avatar" style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;background:var(--accent)">?</div>
@@ -1104,10 +1154,10 @@ body {
 
     <!-- MATERIAIS -->
     <div class="page" id="page-materiais">
-      <div class="page-header"><div><h1 class="page-title">Materiais</h1><p class="page-subtitle">Controle de estoque</p></div><div class="page-actions so-gestor" style="display:none"><button class="btn btn-accent" onclick="openMatModal()"><i class="fas fa-plus"></i> Novo Material</button></div></div>
+      <div class="page-header"><div><h1 class="page-title">Materiais</h1><p class="page-subtitle">Controle de estoque</p></div><div class="page-actions so-gestor"><button class="btn btn-accent" onclick="openMatModal()"><i class="fas fa-plus"></i> Novo Material</button></div></div>
       <div class="mat-stats"><div class="stat-card purple"><div class="stat-icon purple"><i class="fas fa-boxes-stacked"></i></div><div class="stat-value" id="mat-total">–</div><div class="stat-label">Total</div></div><div class="stat-card red"><div class="stat-icon red"><i class="fas fa-triangle-exclamation"></i></div><div class="stat-value" id="mat-baixo">–</div><div class="stat-label">Estoque Baixo</div></div><div class="stat-card green"><div class="stat-icon green"><i class="fas fa-dollar-sign"></i></div><div class="stat-value" id="mat-valor">–</div><div class="stat-label">Valor em Estoque</div></div></div>
       <div class="search-bar"><div class="search-input-wrap"><i class="fas fa-magnifying-glass"></i><input class="search-input" id="mat-search" placeholder="Buscar materiais..." oninput="renderMateriais()"></div><select class="filter-btn" id="mat-filter-cat" onchange="renderMateriais()" style="cursor:pointer"><option value="">Todas as Categorias</option><option>Elétrico</option><option>Hidráulico</option><option>Pintura</option><option>Alvenaria</option><option>Carpintaria</option><option>HVAC</option><option>Outros</option></select></div>
-      <div class="mat-table-wrap"><table class="mat-table"><thead><tr><th>Material</th><th>Categoria</th><th>Estoque</th><th>Unidade</th><th>Custo Unit.</th><th>Fornecedor</th><th>Status</th><th class="so-gestor" style="display:none">Ações</th></tr></thead><tbody id="mat-tbody"></tbody></table></div>
+      <div class="mat-table-wrap"><table class="mat-table"><thead><tr><th>Material</th><th>Categoria</th><th>Estoque</th><th>Unidade</th><th>Custo Unit.</th><th>Fornecedor</th><th>Status</th><th class="so-gestor">Ações</th></tr></thead><tbody id="mat-tbody"></tbody></table></div>
     </div>
 
     <!-- TÉCNICOS (só gestor) -->
@@ -1183,6 +1233,13 @@ body {
         </div>
       </div>
       <div class="form-group" style="margin-top:4px"><label class="form-label">Observações</label><textarea class="form-textarea" id="os-obs" placeholder="Observações adicionais..." style="min-height:60px"></textarea></div>
+      <!-- Fotos: só aparece ao editar OS já salva -->
+      <div id="os-fotos-section" style="display:none">
+        <div class="form-divider"></div>
+        <label class="form-label"><i class="fas fa-camera" style="margin-right:6px;color:var(--accent)"></i>Fotos da OS <span style="color:var(--text3);font-weight:400">(máx. 2 fotos · JPEG/PNG)</span></label>
+        <div class="os-fotos-grid" id="os-fotos-grid"></div>
+        <input type="file" id="os-foto-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadFotoOS(event)">
+      </div>
     </div>
     <div class="modal-foot"><button class="btn" onclick="closeModal('modal-os')">Cancelar</button><button class="btn btn-accent" onclick="saveOS()"><i class="fas fa-floppy-disk"></i> Salvar OS</button></div>
   </div>
@@ -1256,6 +1313,12 @@ body {
 <!-- CONFIRM -->
 <div class="confirm-overlay" id="confirm-dialog">
   <div class="confirm-box"><div class="confirm-icon"><i class="fas fa-trash-can"></i></div><div class="confirm-title">Confirmar exclusão</div><div class="confirm-msg" id="confirm-msg">Esta ação não pode ser desfeita.</div><div class="confirm-btns"><button class="btn" onclick="closeConfirm()">Cancelar</button><button class="btn btn-red" id="confirm-ok-btn">Confirmar</button></div></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()"><i class="fas fa-xmark"></i></button>
+  <img id="lightbox-img" src="" alt="Foto OS">
 </div>
 
 <div class="toast-container" id="toast-container"></div>
@@ -1342,8 +1405,25 @@ async function doLogin(){
 }
 
 async function loadPerfil(){
-  const rows = await sbGet('perfis',`id=eq.${session.user.id}`);
-  perfil = rows?.[0] || { id:session.user.id, nome:session.user.email, email:session.user.email, perfil:'unidade', unidade_id:null };
+  try {
+    const rows = await sbGet('perfis',`id=eq.${session.user.id}`);
+    if (rows && rows.length > 0) {
+      perfil = rows[0];
+    } else {
+      // Perfil ainda não foi criado pelo trigger — cria manualmente
+      const novo = {
+        id: session.user.id,
+        nome: session.user.user_metadata?.nome || session.user.email.split('@')[0],
+        email: session.user.email,
+        perfil: session.user.user_metadata?.perfil || 'unidade'
+      };
+      try { await sbPost('perfis', novo); } catch(e) {}
+      perfil = novo;
+    }
+  } catch(e) {
+    // Fallback seguro
+    perfil = { id:session.user.id, nome:session.user.email, email:session.user.email, perfil:'unidade', unidade_id:null };
+  }
 }
 
 async function doLogout(){
@@ -1393,7 +1473,8 @@ function applyPerfilUI(){
 
   // Visibilidade: elementos só para gestor
   const g=isGestor();
-  document.querySelectorAll('.so-gestor').forEach(el=>el.style.display=g?'':'none');
+  // Usa classe no body para controlar via CSS (evita conflito com inline style)
+  document.body.classList.toggle('gestor-ativo', g);
 
   // Nova OS: ambos podem criar
   document.getElementById('btn-nova-os').style.display='';
@@ -1616,6 +1697,7 @@ function openNewOSModal(){
     document.getElementById('os-gestor-extra').style.display='none';
     document.getElementById('os-status-group').style.display='none';
   }
+  document.getElementById('os-fotos-section').style.display='none';
   openModal('modal-os');
 }
 
@@ -1650,6 +1732,9 @@ function editOS(id){
   }
   closeModal('modal-os-detail');
   openModal('modal-os');
+  // Mostra seção de fotos só ao editar OS já existente
+  document.getElementById('os-fotos-section').style.display = 'block';
+  renderFotosModal(id);
 }
 
 async function saveOS(){
@@ -1722,6 +1807,8 @@ function viewOS(id){
       </div>
     </div>`;
   openModal('modal-os-detail');
+  // Carrega fotos no detalhe
+  renderFotosDetalhe(id, document.getElementById('modal-os-detail-body'));
 }
 function printOSById(id){ viewOS(id); setTimeout(()=>window.print(),400); }
 
@@ -2041,6 +2128,115 @@ function toast(msg,type='success'){
   document.getElementById('toast-container').appendChild(el);
   setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(20px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),300);},3500);
 }
+
+// ════════════════════════════════════════════════════════
+// FOTOS DA OS
+// ════════════════════════════════════════════════════════
+const STORAGE_BUCKET = 'os-fotos';
+
+async function uploadFotoOS(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!editingId) { toast('Salve a OS primeiro antes de adicionar fotos','warning'); return; }
+
+  // Verifica limite de 2 fotos
+  const existentes = await sbGet('os_fotos', `os_id=eq.${editingId}`);
+  if (existentes && existentes.length >= 2) {
+    toast('Máximo de 2 fotos por OS','warning');
+    event.target.value = ''; return;
+  }
+
+  // Valida tamanho (máx 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    toast('Foto muito grande. Máximo 5MB','warning');
+    event.target.value = ''; return;
+  }
+
+  showLoading('Enviando foto...');
+  try {
+    // Upload para Supabase Storage
+    const ext = file.name.split('.').pop();
+    const path = `${editingId}/${Date.now()}.${ext}`;
+    const r = await fetch(`${SUPA_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`, {
+      method: 'POST',
+      headers: { apikey: SUPA_KEY, Authorization: `Bearer ${session?.access_token}`, 'Content-Type': file.type, 'x-upsert': 'true' },
+      body: file
+    });
+    if (!r.ok) throw new Error(await r.text());
+
+    // Registra na tabela
+    const url = `${SUPA_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
+    await sbPost('os_fotos', { os_id: editingId, url, path });
+
+    toast('Foto adicionada!');
+    await renderFotosModal(editingId);
+  } catch(e) {
+    toast('Erro ao enviar foto: '+e.message,'error');
+  } finally {
+    hideLoading();
+    event.target.value = '';
+  }
+}
+
+async function renderFotosModal(osId) {
+  try {
+    const fotos = await sbGet('os_fotos', `os_id=eq.${osId}&order=created_at.asc`);
+    const grid = document.getElementById('os-fotos-grid');
+    if (!grid) return;
+    const items = (fotos||[]).map(f => `
+      <div class="os-foto-thumb" onclick="openLightbox('${f.url}')">
+        <img src="${f.url}" alt="Foto OS" loading="lazy">
+        <button class="os-foto-del" onclick="event.stopPropagation();deleteFotoOS(${f.id},'${f.path}')"
+          title="Remover"><i class="fas fa-xmark"></i></button>
+      </div>`).join('');
+    const canAdd = (fotos||[]).length < 2;
+    grid.innerHTML = items + (canAdd
+      ? `<div class="os-foto-add" onclick="document.getElementById('os-foto-input').click()">
+          <i class="fas fa-camera"></i><span>Adicionar foto</span>
+        </div>` : '');
+  } catch(e) {}
+}
+
+async function deleteFotoOS(id, path) {
+  showLoading('Removendo...');
+  try {
+    // Remove do storage
+    await fetch(`${SUPA_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`, {
+      method: 'DELETE',
+      headers: { apikey: SUPA_KEY, Authorization: `Bearer ${session?.access_token}` }
+    });
+    // Remove da tabela
+    await sbDelete('os_fotos', id);
+    toast('Foto removida','info');
+    await renderFotosModal(editingId);
+  } catch(e) { toast('Erro: '+e.message,'error'); }
+  finally { hideLoading(); }
+}
+
+async function renderFotosDetalhe(osId, container) {
+  try {
+    const fotos = await sbGet('os_fotos', `os_id=eq.${osId}&order=created_at.asc`);
+    if (!fotos || !fotos.length) return;
+    container.innerHTML += `
+      <div class="form-divider"></div>
+      <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
+        <i class="fas fa-camera" style="margin-right:6px;color:var(--accent)"></i>Fotos
+      </div>
+      <div class="os-fotos-grid">
+        ${fotos.map(f=>`<div class="os-foto-thumb" onclick="openLightbox('${f.url}')"><img src="${f.url}" alt="Foto OS" loading="lazy"></div>`).join('')}
+      </div>`;
+  } catch(e) {}
+}
+
+function openLightbox(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox(); });
 
 // ════════════════════════════════════════════════════════
 // BOOT — verifica sessão salva
